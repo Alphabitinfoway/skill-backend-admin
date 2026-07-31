@@ -1,8 +1,13 @@
 import axios from 'axios';
 
+const BASE_URL = import.meta.env.VITE_API_URL || (
+  typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
+    ? 'http://localhost:5000/api'
+    : 'https://skill-backend-admin.onrender.com/api'
+);
+
 const api = axios.create({
-  baseURL: 'http://localhost:5000/api', // Adjust according to backend config
-  // baseURL: 'https://skill-backend-admin.onrender.com/api',
+  baseURL: BASE_URL,
   headers: {
     'Content-Type': 'application/json'
   }
