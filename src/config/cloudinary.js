@@ -22,7 +22,7 @@ const storage = new CloudinaryStorage({
         if (isPdf) {
             const nameWithoutExt = file.originalname ? file.originalname.replace(/\.[^/.]+$/, "").replace(/[^a-zA-Z0-9_-]/g, "_") : "pdf";
             return {
-                folder: 'alphabit_skill_admin',
+                folder: 'skills-pdf-uploads',
                 resource_type: 'raw',
                 public_id: `${nameWithoutExt}-${Date.now()}.pdf`
             };

@@ -22,6 +22,11 @@ const meetingSchema = new mongoose.Schema({
         default: 'no-photo.jpg'
     },
  
+    videoUrl: {
+        type: String,
+        trim: true,
+        default: ''
+    },
     skillSlug: {
         type: String,
         trim: true,

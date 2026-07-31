@@ -8,6 +8,15 @@ const SyllabusList = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
+  const [debouncedSearchTerm, setDebouncedSearchTerm] = useState('');
+
+  // Debounce search input by 250ms
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearchTerm(searchTerm);
+    }, 250);
+    return () => clearTimeout(timer);
+  }, [searchTerm]);
 
   const fetchSyllabus = async () => {
     try {
@@ -36,10 +45,12 @@ const SyllabusList = () => {
     }
   };
 
-  const filteredItems = syllabusList.filter(item => 
-    item.skillSlug?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    item.title?.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const filteredItems = syllabusList.filter(item => {
+    const term = debouncedSearchTerm.trim().toLowerCase();
+    if (!term) return true;
+    return (item.skillSlug || '').toLowerCase().includes(term) ||
+           (item.title || '').toLowerCase().includes(term);
+  });
 
   return (
     <div>

@@ -918,15 +918,33 @@ body {
   background-color: var(--bg-card);
 }
 
+.dashboard-grid-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 290px;
+  gap: 20px;
+  align-items: start;
+}
+
+.dashboard-grid-layout > * {
+  min-width: 0;
+}
+
+@media (max-width: 1180px) {
+  .dashboard-grid-layout {
+    grid-template-columns: 1fr;
+  }
+}
+
 .data-table {
   width: 100%;
   border-collapse: collapse;
 }
 
 .data-table th, .data-table td {
-  padding: 16px;
+  padding: 14px 16px;
   text-align: left;
   border-bottom: 1px solid var(--border-color);
+  vertical-align: middle;
 }
 
 .data-table th {

@@ -523,10 +523,10 @@ const Dashboard = () => {
       </div>
 
       {/* 4. Main Content Layout - 2 Columns */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '24px' }}>
+      <div className="dashboard-grid-layout">
         
         {/* Left Column: Recent Student Registrations */}
-        <div className="card" style={{ gridColumn: 'span 2' }}>
+        <div className="card">
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px', flexWrap: 'wrap', gap: '10px' }}>
             <div>
               <h2 style={{ fontSize: '18px', fontWeight: '700', marginBottom: '2px', color: 'var(--text-main)' }}>Recent Student Registrations</h2>
@@ -565,27 +565,41 @@ const Dashboard = () => {
                             {getInitials(reg.name)}
                           </div>
                           <div>
-                            <div style={{ fontWeight: '700', color: 'var(--text-main)', fontSize: '14px' }}>{reg.name}</div>
-                            {reg.college && <div style={{ fontSize: '11px', color: 'var(--text-muted)' }}>{reg.college}</div>}
+                            <div style={{ fontWeight: '700', color: 'var(--text-main)', fontSize: '14px', whiteSpace: 'nowrap' }}>{reg.name}</div>
+                            {reg.college && (
+                              <div 
+                                style={{ 
+                                  fontSize: '11px', 
+                                  color: 'var(--text-muted)', 
+                                  maxWidth: '200px', 
+                                  overflow: 'hidden', 
+                                  textOverflow: 'ellipsis', 
+                                  whiteSpace: 'nowrap' 
+                                }}
+                                title={reg.college}
+                              >
+                                {reg.college}
+                              </div>
+                            )}
                           </div>
                         </div>
                       </td>
-                      <td>
+                      <td style={{ whiteSpace: 'nowrap' }}>
                         <div style={{ fontSize: '13px', fontWeight: '600', color: 'var(--text-main)' }}>{reg.phone}</div>
-                        <div style={{ fontSize: '11px', color: 'var(--text-muted)' }}>{reg.email}</div>
+                        <div style={{ fontSize: '11px', color: 'var(--text-muted)', maxWidth: '180px', overflow: 'hidden', textOverflow: 'ellipsis' }}>{reg.email}</div>
                       </td>
-                      <td>
-                        <span style={{ fontSize: '12px', fontWeight: '600', backgroundColor: '#f1f5f9', padding: '4px 10px', borderRadius: '12px', color: '#334155' }}>
+                      <td style={{ whiteSpace: 'nowrap' }}>
+                        <span style={{ fontSize: '12px', fontWeight: '600', backgroundColor: '#f1f5f9', padding: '4px 10px', borderRadius: '12px', color: '#334155', display: 'inline-block', whiteSpace: 'nowrap' }}>
                           {reg.seminarBatch}
                         </span>
                       </td>
-                      <td>
+                      <td style={{ whiteSpace: 'nowrap' }}>
                         <span style={getStatusBadgeStyle(reg.status)}>
                           {reg.status === 'attended' && <CheckCircle2 size={12} />}
                           {reg.status}
                         </span>
                       </td>
-                      <td style={{ fontSize: '12px', color: 'var(--text-muted)', fontWeight: '500' }}>
+                      <td style={{ fontSize: '12px', color: 'var(--text-muted)', fontWeight: '500', whiteSpace: 'nowrap' }}>
                         {new Date(reg.createdAt || Date.now()).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
                       </td>
                     </tr>
@@ -597,16 +611,16 @@ const Dashboard = () => {
         </div>
 
         {/* Right Column: Status Breakdown & Recent Blogs */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '20px', minWidth: 0 }}>
           
           {/* Seminar Status Breakdown */}
-          <div className="card">
-            <h3 style={{ fontSize: '16px', fontWeight: '700', marginBottom: '18px', display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--text-main)' }}>
+          <div className="card" style={{ padding: '18px' }}>
+            <h3 style={{ fontSize: '15px', fontWeight: '700', marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--text-main)', whiteSpace: 'nowrap' }}>
               <TrendingUp size={18} color="var(--primary)" />
-              Registration Turnout Gauge
+              Registration Turnout
             </h3>
             
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
               <div>
                 <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '13px', marginBottom: '6px' }}>
                   <span style={{ color: 'var(--text-muted)', fontWeight: '500' }}>Registered</span>
@@ -658,13 +672,13 @@ const Dashboard = () => {
           </div>
 
           {/* Recent Blogs */}
-          <div className="card">
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
-              <h3 style={{ fontSize: '16px', fontWeight: '700', display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--text-main)' }}>
+          <div className="card" style={{ padding: '18px' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '14px' }}>
+              <h3 style={{ fontSize: '15px', fontWeight: '700', display: 'flex', alignItems: 'center', gap: '6px', color: 'var(--text-main)', whiteSpace: 'nowrap' }}>
                 <FileText size={18} color="var(--primary)" />
                 Recent Articles
               </h3>
-              <Link to="/blogs" style={{ fontSize: '12px', fontWeight: '700', color: 'var(--primary)', textDecoration: 'none' }}>
+              <Link to="/blogs" style={{ fontSize: '12px', fontWeight: '700', color: 'var(--primary)', textDecoration: 'none', whiteSpace: 'nowrap' }}>
                 Manage All →
               </Link>
             </div>

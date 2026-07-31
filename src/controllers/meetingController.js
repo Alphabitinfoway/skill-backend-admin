@@ -2,8 +2,8 @@ const Meeting = require('../models/Meeting');
 const catchAsync = require('../middleware/catchAsync');
 const AppError = require('../utils/AppError');
 
-// Helper to convert standard YouTube/Vimeo URLs to embed format for iframe rendering
-const formatEmbedVideoUrl = (url) => {
+// Helper to format YouTube/Vimeo URLs into standard watchable links for new tab opening
+const formatWatchableVideoUrl = (url) => {
     if (!url || typeof url !== 'string') return '';
     const trimmed = url.trim();
     if (!trimmed) return '';
@@ -11,13 +11,13 @@ const formatEmbedVideoUrl = (url) => {
     // YouTube regex match (watch?v=, youtu.be/, shorts/, embed/)
     const ytMatch = trimmed.match(/(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=|shorts\/))([\w-]{11})/);
     if (ytMatch && ytMatch[1]) {
-        return `https://www.youtube.com/embed/${ytMatch[1]}`;
+        return `https://www.youtube.com/watch?v=${ytMatch[1]}`;
     }
 
     // Vimeo regex match
     const vimeoMatch = trimmed.match(/vimeo\.com\/(?:.*\/)?(\d+)/);
     if (vimeoMatch && vimeoMatch[1]) {
-        return `https://player.vimeo.com/video/${vimeoMatch[1]}`;
+        return `https://vimeo.com/${vimeoMatch[1]}`;
     }
 
     return trimmed;
@@ -64,7 +64,7 @@ const createMeeting = catchAsync(async (req, res) => {
     const meetingData = {
         title: req.body.title,
         subtitle: req.body.subtitle,
-        videoUrl: formatEmbedVideoUrl(req.body.videoUrl),
+        videoUrl: formatWatchableVideoUrl(req.body.videoUrl),
         skillSlug: req.body.skillSlug || 'all'
     };
     
@@ -93,7 +93,7 @@ const updateMeetingById = catchAsync(async (req, res) => {
     const updateData = {};
     if (req.body.title !== undefined) updateData.title = req.body.title;
     if (req.body.subtitle !== undefined) updateData.subtitle = req.body.subtitle;
-    if (req.body.videoUrl !== undefined) updateData.videoUrl = formatEmbedVideoUrl(req.body.videoUrl);
+    if (req.body.videoUrl !== undefined) updateData.videoUrl = formatWatchableVideoUrl(req.body.videoUrl);
     if (req.body.skillSlug !== undefined) updateData.skillSlug = req.body.skillSlug;
     
     if (req.files) {
