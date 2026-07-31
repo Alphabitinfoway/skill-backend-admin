@@ -3,6 +3,8 @@ const cors = require('cors');
 const routes = require('./routes');
 const errorHandler = require('./middleware/errorHandler');
 
+const path = require('path');
+
 const app = express();
 
 // Body parser
@@ -12,6 +14,9 @@ app.set("trust proxy", 1);
 
 // Enable CORS
 app.use(cors());
+
+// Serve static uploads
+app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
 
 // Mount routes
 app.use('/api', routes);

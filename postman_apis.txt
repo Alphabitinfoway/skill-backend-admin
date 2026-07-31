@@ -1,14 +1,36 @@
-=========================================
-      ALPHABIT SKILL BACKEND APIs
-=========================================
+====================================================================
+               ALPHABIT SKILL BACKEND API DOCUMENTATION
+====================================================================
 Base URL: http://localhost:5000/api
 
---- 1. AUTHENTICATION & USERS ---
+*Note on Authentication:*
+All "/admin/*" endpoints require an Authorization Header:
+Header Key  : Authorization
+Header Value: Bearer <your_jwt_token>
 
-Register a new user
-- Method: POST
-- URL: /users/register
-- Headers: Content-Type: application/json
+====================================================================
+1. HEALTH CHECK & SYSTEM
+====================================================================
+
+Health Check Status
+- Method : GET
+- URL    : /health
+- Auth   : None
+- Response:
+{
+  "status": "success",
+  "message": "API is healthy"
+}
+
+
+====================================================================
+2. AUTHENTICATION & USERS
+====================================================================
+
+Register New User
+- Method  : POST
+- URL     : /users/register
+- Headers : Content-Type: application/json
 - Body (JSON):
 {
   "name": "Admin User",
@@ -16,74 +38,213 @@ Register a new user
   "password": "password123"
 }
 
-Login User
-- Method: POST
-- URL: /users/login
-- Headers: Content-Type: application/json
+Login User / Get JWT Token
+- Method  : POST
+- URL     : /users/login
+- Headers : Content-Type: application/json
 - Body (JSON):
 {
   "email": "admin@example.com",
   "password": "password123"
 }
-*Note: Returns a "token". Use this token in the "Authorization" header for Admin routes.*
+- Response Example:
+{
+  "success": true,
+  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+  "user": {
+    "id": "66a8b123...",
+    "name": "Admin User",
+    "email": "admin@example.com"
+  }
+}
 
 
---- 2. PUBLIC BLOG ROUTES ---
+====================================================================
+3. FILE & MEDIA UPLOADS (CLOUDINARY)
+====================================================================
 
-Get All Blogs (Public)
-- Method: GET
-- URL: /blogs
-- Headers: None
+Upload Any Single File / PDF / Image
+- Method  : POST
+- URL     : /upload
+- Headers : Content-Type: multipart/form-data
+- Body (form-data):
+  - file (file): Select PDF file or Image file (.pdf, .jpg, .png, .webp)
+  - OR pdf (file): Select PDF file
+  - OR image (file): Select Image file
+- Response Example:
+{
+  "message": "PDF uploaded successfully",
+  "fileUrl": "https://res.cloudinary.com/dn4blj1nq/raw/upload/v178514/alphabit_skill_admin/pdf-178514.pdf",
+  "imageUrl": "https://res.cloudinary.com/dn4blj1nq/raw/upload/v178514/alphabit_skill_admin/pdf-178514.pdf",
+  "pdfUrl": "https://res.cloudinary.com/dn4blj1nq/raw/upload/v178514/alphabit_skill_admin/pdf-178514.pdf"
+}
+
+Upload PDF Specifically
+- Method  : POST
+- URL     : /upload/pdf
+- Headers : Content-Type: multipart/form-data
+- Body (form-data):
+  - pdf (file): Select PDF document file
+
+
+====================================================================
+4. SYLLABUS & CURRICULUM PDF MODULE (SLUG-BASED)
+====================================================================
+
+Get Single Syllabus PDF By Skill Slug (Public Frontend Route)
+- Method  : GET
+- URL     : /syllabus/slug/:slug
+- Example : /syllabus/slug/full-stack-development
+- Auth    : None
+- Response Example:
+{
+  "success": true,
+  "data": {
+    "_id": "66a8c1f9ef1234567890abcd",
+    "skillSlug": "full-stack-development",
+    "pdfUrl": "https://res.cloudinary.com/dn4blj1nq/raw/upload/v178514/alphabit_skill_admin/pdf-178514.pdf",
+    "title": "full-stack-development",
+    "createdAt": "2026-07-30T16:44:00.000Z"
+  }
+}
+
+Get All Syllabus Items (Public)
+- Method  : GET
+- URL     : /syllabus
+- Query Params (Optional):
+  - ?slug=full-stack-development
+  - ?skillSlug=web-development
+
+Get Single Syllabus By ID
+- Method  : GET
+- URL     : /syllabus/:id
+
+Create Syllabus PDF (Admin)
+- Method  : POST
+- URL     : /admin/syllabus
+- Headers : Key: Authorization, Value: Bearer <your_jwt_token>
+- Body (form-data):
+  - skillSlug (text): "full-stack-development"
+  - pdf (file): Select PDF file to upload directly
+  - pdfUrl (text): "https://res.cloudinary.com/..." [Optional if uploading file]
+
+Update Syllabus PDF By ID (Admin)
+- Method  : PUT
+- URL     : /admin/syllabus/:id
+- Headers : Key: Authorization, Value: Bearer <your_jwt_token>
+- Body (form-data):
+  - skillSlug (text): "web-development" [Optional]
+  - pdf (file): Select new PDF file [Optional]
+  - pdfUrl (text): "https://res.cloudinary.com/..." [Optional]
+
+Delete Syllabus PDF By ID (Admin)
+- Method  : DELETE
+- URL     : /admin/syllabus/:id
+- Headers : Key: Authorization, Value: Bearer <your_jwt_token>
+
+
+====================================================================
+5. BLOG MANAGEMENT
+====================================================================
+
+Get All Public Blogs
+- Method  : GET
+- URL     : /blogs
 
 Get Single Blog By Slug (Public)
-- Method: GET
-- URL: /blogs/:slug
-- Headers: None
-- Example: /blogs/my-first-blog
-
-
---- 3. PROTECTED ADMIN BLOG ROUTES ---
-*Note: All routes below require the Authorization header.*
-*Header -> Key: Authorization, Value: Bearer <your_jwt_token>*
+- Method  : GET
+- URL     : /blogs/:slug
+- Example : /blogs/getting-started-with-mern
 
 Get All Blogs (Admin)
-- Method: GET
-- URL: /admin/blogs
+- Method  : GET
+- URL     : /admin/blogs
+- Headers : Key: Authorization, Value: Bearer <your_jwt_token>
 
 Get Single Blog By ID (Admin)
-- Method: GET
-- URL: /admin/blogs/:id
-- Example: /admin/blogs/64a2b3c4d5e6f7g8h9i0j1k2
+- Method  : GET
+- URL     : /admin/blogs/:id
+- Headers : Key: Authorization, Value: Bearer <your_jwt_token>
 
 Create New Blog (Admin)
-- Method: POST
-- URL: /admin/blogs
+- Method  : POST
+- URL     : /admin/blogs
+- Headers : Key: Authorization, Value: Bearer <your_jwt_token>
 - Body (form-data):
-  - title (text): "My New Blog"
-  - content (text): "This is the content."
-  - slug (text): "my-custom-slug" [Optional]
-  - image (file): Select an image file
+  - title (text): "My First Blog Post"
+  - content (text): "Detailed blog content goes here..."
+  - slug (text): "my-first-blog-post" [Optional]
+  - image (file): Select cover image file [Optional]
 
 Update Blog By ID (Admin)
-- Method: PUT
-- URL: /admin/blogs/:id
+- Method  : PUT
+- URL     : /admin/blogs/:id
+- Headers : Key: Authorization, Value: Bearer <your_jwt_token>
 - Body (form-data):
-  - title (text): "Updated Title"
-  - content (text): "Updated content."
+  - title (text): "Updated Blog Title" [Optional]
+  - content (text): "Updated blog content" [Optional]
   - slug (text): "updated-slug" [Optional]
-  - image (file): Select an image file [Optional]
+  - image (file): Select new cover image file [Optional]
 
 Delete Blog By ID (Admin)
-- Method: DELETE
-- URL: /admin/blogs/:id
+- Method  : DELETE
+- URL     : /admin/blogs/:id
+- Headers : Key: Authorization, Value: Bearer <your_jwt_token>
 
 
---- 4. PUBLIC GOOGLE SHEET INQUIRY ROUTES ---
+====================================================================
+6. MEETINGS GLANCE MODULE
+====================================================================
 
-Submit New Demo Class Inquiry
-- Method: POST
-- URL: /inquiries
-- Headers: Content-Type: application/json
+Get All Meetings (Public)
+- Method  : GET
+- URL     : /meetings
+- Query Params (Optional): 
+  - ?skillSlug=full-stack-development
+  - ?skillSlug=all
+
+Get Single Meeting By ID (Public)
+- Method  : GET
+- URL     : /meetings/:id
+
+Create New Meeting (Admin)
+- Method  : POST
+- URL     : /admin/meetings
+- Headers : Key: Authorization, Value: Bearer <your_jwt_token>
+- Body (form-data):
+  - title (text): "A Glance at yesterday's Meeting"
+  - subtitle (text): "Discussing progress of batch MERN-04"
+  - videoUrl (text): "https://www.youtube.com/watch?v=..." [Optional]
+  - skillSlug (text): "full-stack-development" | "web-development" | "all" [Optional, Default: "all"]
+  - image1 (file): select first meeting image file [Optional]
+  - image2 (file): select second meeting image file [Optional]
+
+Update Meeting By ID (Admin)
+- Method  : PUT
+- URL     : /admin/meetings/:id
+- Headers : Key: Authorization, Value: Bearer <your_jwt_token>
+- Body (form-data):
+  - title (text): "Updated Title" [Optional]
+  - subtitle (text): "Updated Subtitle" [Optional]
+  - videoUrl (text): "https://www.youtube.com/watch?v=..." [Optional]
+  - skillSlug (text): "web-development" [Optional]
+  - image1 (file): select new first image [Optional]
+  - image2 (file): select new second image [Optional]
+
+Delete Meeting By ID (Admin)
+- Method  : DELETE
+- URL     : /admin/meetings/:id
+- Headers : Key: Authorization, Value: Bearer <your_jwt_token>
+
+
+====================================================================
+7. DEMO CLASS INQUIRIES (GOOGLE SHEETS INTEGRATION)
+====================================================================
+
+Submit Demo Class Inquiry
+- Method  : POST
+- URL     : /inquiries
+- Headers : Content-Type: application/json
 - Body (JSON):
 {
   "name": "Jane Smith",
@@ -93,117 +254,73 @@ Submit New Demo Class Inquiry
 }
 
 
---- 5. MEETING ROUTES ---
+====================================================================
+8. SEMINAR REGISTRATIONS & EVENTS
+====================================================================
 
-Get All Meetings (Public)
-- Method: GET
-- URL: /meetings
-
-Get Single Meeting By ID (Public)
-- Method: GET
-- URL: /meetings/:id
-
-Create New Meeting (Admin)
-- Method: POST
-- URL: /admin/meetings
-- Headers: Key: Authorization, Value: Bearer <your_jwt_token>
-- Body (form-data):
-  - title (text): "Glance at yesterday's Meeting"
-  - subtitle (text): "Discussing progress of batch MERN-04"
-  - image1 (file): select first meeting image file
-  - image2 (file): select second meeting image file
-
-Update Meeting By ID (Admin)
-- Method: PUT
-- URL: /admin/meetings/:id
-- Headers: Key: Authorization, Value: Bearer <your_jwt_token>
-- Body (form-data):
-  - title (text): "Updated Meeting Title" [Optional]
-  - subtitle (text): "Updated Subtitle" [Optional]
-  - image1 (file): select first image file [Optional]
-  - image2 (file): select second image file [Optional]
-
-Delete Meeting By ID (Admin)
-- Method: DELETE
-- URL: /admin/meetings/:id
-- Headers: Key: Authorization, Value: Bearer <your_jwt_token>
-
---- 6. SEMINAR REGISTRATION ROUTES ---
+Get Currently Active Seminar Event (Public)
+- Method  : GET
+- URL     : /seminars/current
 
 Submit New Seminar Registration (Public)
-- Method: POST
-- URL: /seminars/register
-- Headers: Content-Type: application/json
-- Note: Rate limit max 5 requests per 10 minutes per IP. Same-phone signup prevented for duplicate batch.
+- Method  : POST
+- URL     : /seminars/register
+- Headers : Content-Type: application/json
 - Body (JSON):
 {
-  "name": "Jane Doe",
+  "name": "John Doe",
   "phone": "9876543210",
-  "email": "janedoe@example.com",
-  "college": "Test University",
-  "course": "Computer Science",
-  "city": "Mumbai",
+  "email": "johndoe@example.com",
+  "college": "GTU University",
+  "course": "Computer Engineering",
+  "city": "Rajkot",
   "source": "Instagram",
-  "seminarBatch": "July 2026 Batch"
+  "seminarBatch": "Aug-2026"
 }
 
 Get All Seminar Registrations (Admin)
-- Method: GET
-- URL: /admin/seminars?batch=July 2026 Batch&status=registered&search=Jane&page=1&limit=10
-- Headers: Key: Authorization, Value: Bearer <your_jwt_token>
+- Method  : GET
+- URL     : /admin/seminars?batch=Aug-2026&status=registered&search=John&page=1&limit=10
+- Headers : Key: Authorization, Value: Bearer <your_jwt_token>
 
 Get Single Seminar Registration By ID (Admin)
-- Method: GET
-- URL: /admin/seminars/:id
-- Headers: Key: Authorization, Value: Bearer <your_jwt_token>
+- Method  : GET
+- URL     : /admin/seminars/:id
+- Headers : Key: Authorization, Value: Bearer <your_jwt_token>
 
 Update Seminar Registration Status By ID (Admin)
-- Method: PUT
-- URL: /admin/seminars/:id
-- Headers: Key: Authorization, Value: Bearer <your_jwt_token>, Content-Type: application/json
+- Method  : PUT
+- URL     : /admin/seminars/:id
+- Headers : Key: Authorization, Value: Bearer <your_jwt_token>, Content-Type: application/json
 - Body (JSON):
 {
   "status": "attended"
 }
 
 Delete Seminar Registration By ID (Admin)
-- Method: DELETE
-- URL: /admin/seminars/:id
-- Headers: Key: Authorization, Value: Bearer <your_jwt_token>
+- Method  : DELETE
+- URL     : /admin/seminars/:id
+- Headers : Key: Authorization, Value: Bearer <your_jwt_token>
 
 Export Seminar Registrations to CSV (Admin)
-- Method: GET
-- URL: /admin/seminars/export?batch=July 2026 Batch&status=registered
-- Headers: Key: Authorization, Value: Bearer <your_jwt_token>
+- Method  : GET
+- URL     : /admin/seminars/export?batch=Aug-2026&status=registered
+- Headers : Key: Authorization, Value: Bearer <your_jwt_token>
 
-Get Seminar Registration Stats (Admin)
-- Method: GET
-- URL: /admin/seminars/stats
-- Headers: Key: Authorization, Value: Bearer <your_jwt_token>
-
-
---- 7. SEMINAR EVENT ROUTES ---
-
-Get Currently Active Seminar Event (Public)
-- Method: GET
-- URL: /seminars/current
-- Headers: None
-- Note: Returns currently active event (isActive: true) plus calculated `seatsLeft` and `registeredCount`.
+Get Seminar Registration Statistics (Admin)
+- Method  : GET
+- URL     : /admin/seminars/stats
+- Headers : Key: Authorization, Value: Bearer <your_jwt_token>
 
 Get All Seminar Events (Admin)
-- Method: GET
-- URL: /admin/seminar-events
-- Headers: Key: Authorization, Value: Bearer <your_jwt_token>
+- Method  : GET
+- URL     : /admin/seminar-events
+- Headers : Key: Authorization, Value: Bearer <your_jwt_token>
 
-Get Single Seminar Event By ID (Admin)
-- Method: GET
-- URL: /admin/seminar-events/:id
-- Headers: Key: Authorization, Value: Bearer <your_jwt_token>
-
-Create New Seminar Event (Admin)
-- Method: POST
-- URL: /admin/seminar-events
-- Headers: Key: Authorization, Value: Bearer <your_jwt_token>
+Create Seminar Event (Admin)
+- Method  : POST
+- URL     : /admin/seminar-events
+- Headers : Key: Authorization, Value: Bearer <your_jwt_token>
 - Body (form-data):
   - batchId (text): "Aug-2026"
   - topic (text): "Cracking Your First Tech Career"
@@ -211,36 +328,26 @@ Create New Seminar Event (Admin)
   - startTime (text): "4:00 PM"
   - endTime (text): "6:00 PM"
   - mode (text): "Offline"
-  - venue (text): "Alphabit Skill Studio, Rajkot"
+  - venue (text): "Alphabit Skill Studio"
   - venueMapLink (text): "https://maps.google.com/?q=..." [Optional]
-  - language (text): "English & Gujarati/Hindi mix" [Optional]
-  - totalSeats (text/number): "100" [Optional, Default: 100]
-  - isActive (text/boolean): "true" [Optional, Default: true]
+  - language (text): "English & Gujarati mix" [Optional]
+  - totalSeats (text/number): "100" [Optional]
+  - isActive (text/boolean): "true" [Optional]
   - venueImage (file): Select venue image file [Optional]
 
 Update Seminar Event By ID (Admin)
-- Method: PUT
-- URL: /admin/seminar-events/:id
-- Headers: Key: Authorization, Value: Bearer <your_jwt_token>
-- Body (form-data):
-  - topic (text): "Updated Seminar Topic" [Optional]
-  - date (text): "2026-08-10" [Optional]
-  - startTime (text): "5:00 PM" [Optional]
-  - endTime (text): "7:00 PM" [Optional]
-  - totalSeats (text/number): "120" [Optional]
-  - isActive (text/boolean): "true" [Optional]
-  - venueImage (file): Select new venue image file [Optional]
+- Method  : PUT
+- URL     : /admin/seminar-events/:id
+- Headers : Key: Authorization, Value: Bearer <your_jwt_token>
 
 Delete Seminar Event By ID (Admin)
-- Method: DELETE
-- URL: /admin/seminar-events/:id
-- Headers: Key: Authorization, Value: Bearer <your_jwt_token>
+- Method  : DELETE
+- URL     : /admin/seminar-events/:id
+- Headers : Key: Authorization, Value: Bearer <your_jwt_token>
 
 Activate Seminar Event (Admin)
-- Method: PATCH
-- URL: /admin/seminar-events/:id/activate
-- Headers: Key: Authorization, Value: Bearer <your_jwt_token>
-- Note: Sets target seminar event isActive: true and deactivates all others.
+- Method  : PATCH
+- URL     : /admin/seminar-events/:id/activate
+- Headers : Key: Authorization, Value: Bearer <your_jwt_token>
 
-=========================================
-
+====================================================================

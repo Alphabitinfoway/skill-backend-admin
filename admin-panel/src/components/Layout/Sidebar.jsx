@@ -34,6 +34,7 @@ const Sidebar = ({ collapsed, mobileOpen, closeMobile }) => {
       title: 'CONTENT MANAGEMENT',
       items: [
         { name: 'Blog Posts', path: '/blogs', icon: FileText },
+        { name: 'Syllabus / PDFs', path: '/syllabus', icon: BookOpen },
         { name: 'Meetings Glance', path: '/meetings', icon: Users }
       ]
     }
@@ -46,7 +47,7 @@ const Sidebar = ({ collapsed, mobileOpen, closeMobile }) => {
         <Link to="/" className="brand-wrapper">
           <div className="brand-icon-box">
             <img 
-              src="https://res.cloudinary.com/dn4blj1nq/image/upload/v1783683104/logo.webp" 
+              src="https://res.cloudinary.com/dn4blj1nq/image/upload/v1785143152/Icon.svg" 
               alt="Alphabit Skill Logo" 
             />
           </div>

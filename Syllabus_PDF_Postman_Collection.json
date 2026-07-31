@@ -1,0 +1,218 @@
+{
+  "info": {
+    "_postman_id": "alphabit-syllabus-pdf-api-collection",
+    "name": "Alphabit Syllabus PDF APIs",
+    "description": "Postman Collection for Alphabit Skill Studio Syllabus & PDF Upload APIs",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "1. Get Syllabus PDF By Skill Slug (Public Frontend)",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/syllabus/slug/full-stack-development",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "syllabus",
+            "slug",
+            "full-stack-development"
+          ]
+        },
+        "description": "Fetch PDF Syllabus document for target skill slug (e.g., full-stack-development)"
+      },
+      "response": []
+    },
+    {
+      "name": "2. Get All Syllabus PDFs",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/syllabus",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "syllabus"
+          ]
+        },
+        "description": "Get all syllabus PDF items"
+      },
+      "response": []
+    },
+    {
+      "name": "3. Direct Upload PDF to Cloudinary",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "formdata",
+          "formdata": [
+            {
+              "key": "pdf",
+              "type": "file",
+              "description": "Select PDF document file to upload"
+            }
+          ]
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/upload/pdf",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "upload",
+            "pdf"
+          ]
+        },
+        "description": "Upload a PDF directly to Cloudinary storage"
+      },
+      "response": []
+    },
+    {
+      "name": "4. Create Syllabus PDF (Admin)",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{jwtToken}}",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "formdata",
+          "formdata": [
+            {
+              "key": "skillSlug",
+              "value": "full-stack-development",
+              "type": "text"
+            },
+            {
+              "key": "pdf",
+              "type": "file",
+              "description": "PDF File upload"
+            },
+            {
+              "key": "pdfUrl",
+              "value": "",
+              "type": "text",
+              "description": "Or direct Cloudinary PDF URL"
+            }
+          ]
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/admin/syllabus",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "admin",
+            "syllabus"
+          ]
+        },
+        "description": "Create and map a PDF document to a skill slug"
+      },
+      "response": []
+    },
+    {
+      "name": "5. Update Syllabus PDF By ID (Admin)",
+      "request": {
+        "method": "PUT",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{jwtToken}}",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "formdata",
+          "formdata": [
+            {
+              "key": "skillSlug",
+              "value": "full-stack-development",
+              "type": "text"
+            },
+            {
+              "key": "pdf",
+              "type": "file",
+              "description": "New PDF File upload"
+            }
+          ]
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/admin/syllabus/:id",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "admin",
+            "syllabus",
+            ":id"
+          ],
+          "variable": [
+            {
+              "key": "id",
+              "value": "REPLACE_WITH_SYLLABUS_ID"
+            }
+          ]
+        },
+        "description": "Update existing Syllabus PDF by ID"
+      },
+      "response": []
+    },
+    {
+      "name": "6. Delete Syllabus PDF By ID (Admin)",
+      "request": {
+        "method": "DELETE",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{jwtToken}}",
+            "type": "text"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/api/admin/syllabus/:id",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "admin",
+            "syllabus",
+            ":id"
+          ],
+          "variable": [
+            {
+              "key": "id",
+              "value": "REPLACE_WITH_SYLLABUS_ID"
+            }
+          ]
+        },
+        "description": "Delete Syllabus PDF by ID"
+      },
+      "response": []
+    }
+  ],
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:5000"
+    },
+    {
+      "key": "jwtToken",
+      "value": "YOUR_ADMIN_JWT_TOKEN_HERE"
+    }
+  ]
+}

@@ -95,6 +95,45 @@ const Header = ({ collapsed, toggleCollapse, toggleMobileOpen }) => {
     navigate(path);
   };
 
+  // Helper to get read and cleared notification IDs from localStorage
+  const getReadNotificationIds = () => {
+    try {
+      const stored = localStorage.getItem('read_notification_ids');
+      return stored ? JSON.parse(stored) : [];
+    } catch {
+      return [];
+    }
+  };
+
+  const getClearedNotificationIds = () => {
+    try {
+      const stored = localStorage.getItem('cleared_notification_ids');
+      return stored ? JSON.parse(stored) : [];
+    } catch {
+      return [];
+    }
+  };
+
+  const saveReadNotificationIds = (ids) => {
+    try {
+      const current = getReadNotificationIds();
+      const updated = Array.from(new Set([...current, ...ids]));
+      localStorage.setItem('read_notification_ids', JSON.stringify(updated));
+    } catch (err) {
+      console.error('Failed to save read notification IDs', err);
+    }
+  };
+
+  const saveClearedNotificationIds = (ids) => {
+    try {
+      const current = getClearedNotificationIds();
+      const updated = Array.from(new Set([...current, ...ids]));
+      localStorage.setItem('cleared_notification_ids', JSON.stringify(updated));
+    } catch (err) {
+      console.error('Failed to save cleared notification IDs', err);
+    }
+  };
+
   // Fetch real notifications from backend
   useEffect(() => {
     const fetchNotifications = async () => {
@@ -111,9 +150,9 @@ const Header = ({ collapsed, toggleCollapse, toggleMobileOpen }) => {
         // 1. Process recent Registrations
         if (regsRes.status === 'fulfilled' && regsRes.value.data?.success) {
           const regs = regsRes.value.data.data || [];
-          regs.slice(0, 3).forEach((reg) => {
+          regs.slice(0, 3).forEach((reg, index) => {
             items.push({
-              id: `reg-${reg._id || Math.random()}`,
+              id: reg._id ? `reg-${reg._id}` : `reg-${index}`,
               type: 'registration',
               icon: UserPlus,
               title: 'New Student Signup',
@@ -131,7 +170,7 @@ const Header = ({ collapsed, toggleCollapse, toggleMobileOpen }) => {
           const active = events.find(e => e.isActive);
           if (active) {
             items.push({
-              id: `event-${active._id || Math.random()}`,
+              id: active._id ? `event-${active._id}` : 'event-active',
               type: 'event',
               icon: Calendar,
               title: 'Active Seminar Event',
@@ -146,9 +185,9 @@ const Header = ({ collapsed, toggleCollapse, toggleMobileOpen }) => {
         // 3. Process Meetings/Inquiries
         if (meetingsRes.status === 'fulfilled' && meetingsRes.value.data?.success) {
           const meets = meetingsRes.value.data.data || [];
-          meets.slice(0, 2).forEach((meet) => {
+          meets.slice(0, 2).forEach((meet, index) => {
             items.push({
-              id: `meet-${meet._id || Math.random()}`,
+              id: meet._id ? `meet-${meet._id}` : `meet-${index}`,
               type: 'meeting',
               icon: Users,
               title: 'Meeting Request',
@@ -186,7 +225,18 @@ const Header = ({ collapsed, toggleCollapse, toggleMobileOpen }) => {
           );
         }
 
-        setNotifications(items);
+        const readIds = getReadNotificationIds();
+        const clearedIds = getClearedNotificationIds();
+
+        // Filter out cleared items and apply stored unread status
+        const processedItems = items
+          .filter(item => !clearedIds.includes(item.id))
+          .map(item => ({
+            ...item,
+            unread: !readIds.includes(item.id)
+          }));
+
+        setNotifications(processedItems);
       } catch (err) {
         console.error('Error fetching notifications:', err);
       } finally {
@@ -200,15 +250,20 @@ const Header = ({ collapsed, toggleCollapse, toggleMobileOpen }) => {
   const unreadCount = notifications.filter(n => n.unread).length;
 
   const markAllAsRead = () => {
+    const allIds = notifications.map(n => n.id);
+    saveReadNotificationIds(allIds);
     setNotifications(prev => prev.map(n => ({ ...n, unread: false })));
   };
 
   const clearAll = () => {
+    const allIds = notifications.map(n => n.id);
+    saveClearedNotificationIds(allIds);
     setNotifications([]);
   };
 
   const handleNotificationClick = (item) => {
     // Mark as read
+    saveReadNotificationIds([item.id]);
     setNotifications(prev => prev.map(n => n.id === item.id ? { ...n, unread: false } : n));
     setShowNotifications(false);
     if (item.link) {

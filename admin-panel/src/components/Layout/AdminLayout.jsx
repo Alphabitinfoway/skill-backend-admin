@@ -15,7 +15,7 @@ const AdminLayout = () => {
 
   const toggleCollapse = () => {
     setCollapsed(prev => !prev);
-  };    
+  };
 
   const toggleMobileOpen = () => {
     setMobileOpen(prev => !prev);

@@ -20,6 +20,12 @@ const meetingSchema = new mongoose.Schema({
     image2: {
         type: String,
         default: 'no-photo.jpg'
+    },
+ 
+    skillSlug: {
+        type: String,
+        trim: true,
+        default: 'all'
     }
 }, {
     timestamps: true

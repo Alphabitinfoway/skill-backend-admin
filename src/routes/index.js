@@ -47,4 +47,12 @@ router.use('/admin/seminars', adminSeminarRoutes);
 const adminSeminarEventRoutes = require('./adminSeminarEventRoutes');
 router.use('/admin/seminar-events', adminSeminarEventRoutes);
 
+// Mount public syllabus routes
+const syllabusRoutes = require('./syllabusRoutes');
+router.use('/syllabus', syllabusRoutes);
+
+// Mount admin syllabus routes
+const adminSyllabusRoutes = require('./adminSyllabusRoutes');
+router.use('/admin/syllabus', adminSyllabusRoutes);
+
 module.exports = router;

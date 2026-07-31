@@ -11,6 +11,16 @@ const createMeetingRules = [
         .notEmpty().withMessage('Please add a subtitle')
         .isString().withMessage('Subtitle must be text')
         .isLength({ max: 200 }).withMessage('Subtitle cannot be more than 200 characters')
+        .trim(),
+
+    body('videoUrl')
+        .optional()
+        .isString().withMessage('Video URL must be text')
+        .trim(),
+
+    body('skillSlug')
+        .optional()
+        .isString().withMessage('Skill slug must be text')
         .trim()
 ];
 
@@ -27,6 +37,16 @@ const updateMeetingRules = [
         .notEmpty().withMessage('Subtitle cannot be empty')
         .isString().withMessage('Subtitle must be text')
         .isLength({ max: 200 }).withMessage('Subtitle cannot be more than 200 characters')
+        .trim(),
+
+    body('videoUrl')
+        .optional()
+        .isString().withMessage('Video URL must be text')
+        .trim(),
+
+    body('skillSlug')
+        .optional()
+        .isString().withMessage('Skill slug must be text')
         .trim()
 ];
 

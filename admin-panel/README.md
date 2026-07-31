@@ -1,16 +1,61 @@
-# React + Vite
+# Alphabit Skill Admin Panel
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+The **Admin Panel** is a web dashboard built with **React 19** and **Vite** for **Alphabit Skill Studio**. It provides administrative tools to manage blog posts, meeting logs, seminar events, and student seminar registrations.
 
-Currently, two official plugins are available:
+---
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## 🛠️ Tech Stack & Features
 
-## React Compiler
+- **React 19 & Vite**: Ultra-fast hot module replacement (HMR) and optimized build pipeline.
+- **React Router DOM (v7)**: Seamless SPA routing with protected admin layouts.
+- **Axios**: API integration with global HTTP request interceptors for handling JWT tokens.
+- **Lucide Icons**: Clean, modern UI icons.
+- **Custom CSS Design**: Tailored responsive interface with dark/light themes and intuitive data tables.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+---
 
-## Expanding the Oxlint configuration
+## 📂 Key Sections
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and Oxlint's TypeScript related rules in your project.
+1. **Dashboard Overview**: Summary statistics for blog posts, meetings, and active seminar registrations.
+2. **Blogs Management**: Create, view, edit, and delete blogs with image uploads.
+3. **Meetings Management**: Log internal/external meetings and upload session visual highlights.
+4. **Seminar Events**: Create, edit, and activate seminar events (auto-calculates seat availability).
+5. **Seminar Registrations**: Search, filter by batch/status, update registration status (registered/attended/cancelled), and export lists directly to CSV.
+
+---
+
+## 🚀 Quick Start
+
+### Installation
+
+```bash
+# Navigate to admin-panel directory
+cd admin-panel
+
+# Install dependencies
+npm install
+```
+
+### Running Locally
+
+```bash
+npm run dev
+```
+
+The app will be accessible at `http://localhost:5173`.
+
+### Production Build
+
+```bash
+# Build production bundle
+npm run build
+
+# Preview production build locally
+npm run preview
+```
+
+### Code Linting
+
+```bash
+npm run lint
+```

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { Plus, Edit2, Trash2, Search, Image as ImageIcon, Calendar } from 'lucide-react';
+import { Plus, Edit2, Trash2, Search, Image as ImageIcon, Calendar, Video } from 'lucide-react';
 import api from '../../api/axios';
 
 const MeetingList = () => {
@@ -75,7 +75,8 @@ const MeetingList = () => {
           <thead>
             <tr>
               <th>Meeting Info</th>
-              <th>Images</th>
+              <th>Target Page</th>
+              <th>Images / Media</th>
               <th>Date Created</th>
               <th style={{ textAlign: 'right' }}>Actions</th>
             </tr>
@@ -83,13 +84,13 @@ const MeetingList = () => {
           <tbody>
             {loading ? (
               <tr>
-                <td colSpan="4" style={{ textAlign: 'center', padding: '40px' }}>
+                <td colSpan="5" style={{ textAlign: 'center', padding: '40px' }}>
                   <div style={{ color: 'var(--text-muted)' }}>Loading meetings...</div>
                 </td>
               </tr>
             ) : filteredMeetings.length === 0 ? (
               <tr>
-                <td colSpan="4" style={{ textAlign: 'center', padding: '48px', color: 'var(--text-muted)' }}>
+                <td colSpan="5" style={{ textAlign: 'center', padding: '48px', color: 'var(--text-muted)' }}>
                   <div style={{ marginBottom: '12px' }}>
                     <Calendar size={48} style={{ opacity: 0.2, margin: '0 auto' }} />
                   </div>
@@ -107,7 +108,20 @@ const MeetingList = () => {
                     </div>
                   </td>
                   <td>
-                    <div style={{ display: 'flex', gap: '8px' }}>
+                    <span style={{ 
+                      display: 'inline-block',
+                      padding: '4px 10px', 
+                      borderRadius: '12px', 
+                      fontSize: '12px', 
+                      fontWeight: '600',
+                      backgroundColor: meeting.skillSlug && meeting.skillSlug !== 'all' ? 'rgba(59, 130, 246, 0.1)' : 'rgba(156, 163, 175, 0.1)',
+                      color: meeting.skillSlug && meeting.skillSlug !== 'all' ? '#2563eb' : '#6b7280'
+                    }}>
+                      {meeting.skillSlug && meeting.skillSlug !== 'all' ? meeting.skillSlug : 'All Pages (Global)'}
+                    </span>
+                  </td>
+                  <td>
+                    <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
                       {/* Image 1 Preview */}
                       {meeting.image1 && meeting.image1 !== 'no-photo.jpg' ? (
                         <div style={{ width: '48px', height: '48px', borderRadius: 'var(--radius-sm)', overflow: 'hidden', backgroundColor: 'var(--bg-main)' }}>
@@ -128,6 +142,33 @@ const MeetingList = () => {
                           <ImageIcon size={18} />
                         </div>
                       )}
+                      {/* Video Link Preview */}
+                      {meeting.videoUrl ? (
+                        <a 
+                          href={meeting.videoUrl} 
+                          target="_blank" 
+                          rel="noopener noreferrer" 
+                          style={{ 
+                            height: '48px',
+                            padding: '0 12px',
+                            borderRadius: 'var(--radius-sm)', 
+                            background: 'linear-gradient(135deg, rgba(99, 102, 241, 0.12) 0%, rgba(79, 70, 229, 0.2) 100%)', 
+                            border: '1px solid rgba(99, 102, 241, 0.3)',
+                            color: '#6366f1',
+                            display: 'flex', 
+                            alignItems: 'center', 
+                            gap: '6px',
+                            textDecoration: 'none',
+                            fontWeight: '600',
+                            fontSize: '12px',
+                            transition: 'all 0.2s ease'
+                          }} 
+                          title="Click to open video"
+                        >
+                          <Video size={18} style={{ color: '#6366f1' }} />
+                          <span>Watch</span>
+                        </a>
+                      ) : null}
                     </div>
                   </td>
                   <td style={{ color: 'var(--text-muted)', fontSize: '14px' }}>

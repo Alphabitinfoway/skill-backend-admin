@@ -2,11 +2,47 @@ const Meeting = require('../models/Meeting');
 const catchAsync = require('../middleware/catchAsync');
 const AppError = require('../utils/AppError');
 
+// Helper to convert standard YouTube/Vimeo URLs to embed format for iframe rendering
+const formatEmbedVideoUrl = (url) => {
+    if (!url || typeof url !== 'string') return '';
+    const trimmed = url.trim();
+    if (!trimmed) return '';
+
+    // YouTube regex match (watch?v=, youtu.be/, shorts/, embed/)
+    const ytMatch = trimmed.match(/(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=|shorts\/))([\w-]{11})/);
+    if (ytMatch && ytMatch[1]) {
+        return `https://www.youtube.com/embed/${ytMatch[1]}`;
+    }
+
+    // Vimeo regex match
+    const vimeoMatch = trimmed.match(/vimeo\.com\/(?:.*\/)?(\d+)/);
+    if (vimeoMatch && vimeoMatch[1]) {
+        return `https://player.vimeo.com/video/${vimeoMatch[1]}`;
+    }
+
+    return trimmed;
+};
+
 // @desc    Get all meetings
 // @route   GET /api/meetings
 // @access  Public
 const getMeetings = catchAsync(async (req, res) => {
-    const meetings = await Meeting.find().sort({ createdAt: -1 });
+    const { skillSlug, slug } = req.query;
+    const targetSlug = skillSlug || slug;
+    
+    let filter = {};
+    if (targetSlug) {
+        filter = {
+            $or: [
+                { skillSlug: targetSlug },
+                { skillSlug: 'all' },
+                { skillSlug: '' },
+                { skillSlug: { $exists: false } }
+            ]
+        };
+    }
+
+    const meetings = await Meeting.find(filter).sort({ createdAt: -1 });
     res.status(200).json({ success: true, count: meetings.length, data: meetings });
 });
 
@@ -27,7 +63,9 @@ const getMeetingById = catchAsync(async (req, res) => {
 const createMeeting = catchAsync(async (req, res) => {
     const meetingData = {
         title: req.body.title,
-        subtitle: req.body.subtitle
+        subtitle: req.body.subtitle,
+        videoUrl: formatEmbedVideoUrl(req.body.videoUrl),
+        skillSlug: req.body.skillSlug || 'all'
     };
     
     if (req.files) {
@@ -47,9 +85,7 @@ const createMeeting = catchAsync(async (req, res) => {
 // @route   PUT /api/admin/meetings/:id
 // @access  Private/Admin
 const updateMeetingById = catchAsync(async (req, res) => {
-    console.log('UPDATING MEETING ID:', req.params.id);
     let meeting = await Meeting.findById(req.params.id);
-    console.log('MEETING FOUND IN DB:', meeting);
     if (!meeting) {
         throw new AppError('Meeting not found', 404);
     }
@@ -57,6 +93,8 @@ const updateMeetingById = catchAsync(async (req, res) => {
     const updateData = {};
     if (req.body.title !== undefined) updateData.title = req.body.title;
     if (req.body.subtitle !== undefined) updateData.subtitle = req.body.subtitle;
+    if (req.body.videoUrl !== undefined) updateData.videoUrl = formatEmbedVideoUrl(req.body.videoUrl);
+    if (req.body.skillSlug !== undefined) updateData.skillSlug = req.body.skillSlug;
     
     if (req.files) {
         if (req.files.image1 && req.files.image1[0]) {

@@ -16,6 +16,8 @@ const MeetingForm = lazy(() => import('./pages/Meetings/MeetingForm'));
 const SeminarList = lazy(() => import('./pages/Seminars/SeminarList'));
 const SeminarEventList = lazy(() => import('./pages/SeminarEvents/SeminarEventList'));
 const SeminarEventForm = lazy(() => import('./pages/SeminarEvents/SeminarEventForm'));
+const SyllabusList = lazy(() => import('./pages/Syllabus/SyllabusList'));
+const SyllabusForm = lazy(() => import('./pages/Syllabus/SyllabusForm'));
 
 // Loading component for Suspense fallback
 const PageLoader = () => (
@@ -38,6 +40,9 @@ function App() {
                 <Route path="/blogs" element={<BlogList />} />
                 <Route path="/blogs/create" element={<BlogForm />} />
                 <Route path="/blogs/edit/:id" element={<BlogForm />} />
+                <Route path="/syllabus" element={<SyllabusList />} />
+                <Route path="/syllabus/create" element={<SyllabusForm />} />
+                <Route path="/syllabus/edit/:id" element={<SyllabusForm />} />
                 <Route path="/meetings" element={<MeetingList />} />
                 <Route path="/meetings/create" element={<MeetingForm />} />
                 <Route path="/meetings/edit/:id" element={<MeetingForm />} />
