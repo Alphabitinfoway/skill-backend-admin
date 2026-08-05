@@ -20,7 +20,8 @@ import {
   UserPlus,
   Sparkles,
   Inbox,
-  X
+  X,
+  RefreshCw
 } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 import api from '../../api/axios';
@@ -506,6 +507,17 @@ const Header = ({ collapsed, toggleCollapse, toggleMobileOpen }) => {
             </div>
           )}
         </div>
+
+        {/* Global Refresh Data Button */}
+        <button 
+          onClick={() => window.location.reload()} 
+          className="btn btn-secondary" 
+          style={{ padding: '7px 14px', fontSize: '12.5px', gap: '6px' }}
+          title="Reload page to fetch latest live data"
+        >
+          <RefreshCw size={14} />
+          <span>Refresh Data</span>
+        </button>
 
         {/* Public Website Button */}
         <a 

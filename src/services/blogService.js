@@ -6,7 +6,10 @@ const getAllBlogs = async () => {
 };
 
 const getBlogBySlug = async (slug) => {
-    const blog = await Blog.findOne({ slug }).populate('author', 'name email');
+    let blog = await Blog.findOne({ slug }).populate('author', 'name email');
+    if (!blog && require('mongoose').Types.ObjectId.isValid(slug)) {
+        blog = await Blog.findById(slug).populate('author', 'name email');
+    }
     if (!blog) {
         throw new AppError('Blog not found', 404);
     }
@@ -50,6 +53,9 @@ const updateBlogById = async (id, updateData, file) => {
     }
 
     if (updateData.title && typeof updateData.title === 'string') blog.title = updateData.title;
+    if (typeof updateData.metaTitle === 'string') blog.metaTitle = updateData.metaTitle;
+    if (typeof updateData.metaDescription === 'string') blog.metaDescription = updateData.metaDescription;
+    if (typeof updateData.ctaLink === 'string') blog.ctaLink = updateData.ctaLink;
     if (updateData.content && typeof updateData.content === 'string') blog.content = updateData.content;
     if (updateData.image && typeof updateData.image === 'string') blog.image = updateData.image;
 

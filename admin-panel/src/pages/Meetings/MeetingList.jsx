@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { Plus, Edit2, Trash2, Search, Image as ImageIcon, Calendar, Video, Filter, X, Layers, Sparkles } from 'lucide-react';
+import { Plus, Edit2, Trash2, Search, Image as ImageIcon, Calendar, Video, Filter, X, Layers, Sparkles, RefreshCw } from 'lucide-react';
 import api from '../../api/axios';
 
 const getWatchableUrl = (url) => {
@@ -106,10 +106,22 @@ const MeetingList = () => {
           </p>
         </div>
 
-        <Link to="/meetings/create" className="btn btn-primary" style={{ padding: '11px 20px', borderRadius: '10px' }}>
-          <Plus size={18} />
-          Create Meeting Glance
-        </Link>
+        <div style={{ display: 'flex', gap: '10px' }}>
+          <button 
+            onClick={fetchMeetings} 
+            disabled={loading}
+            className="btn btn-secondary" 
+            style={{ padding: '11px 18px', borderRadius: '10px', display: 'flex', alignItems: 'center', gap: '8px' }}
+            title="Refresh Meetings Data"
+          >
+            <RefreshCw size={18} className={loading ? 'spin-icon' : ''} />
+            Refresh
+          </button>
+          <Link to="/meetings/create" className="btn btn-primary" style={{ padding: '11px 20px', borderRadius: '10px' }}>
+            <Plus size={18} />
+            Create Meeting Glance
+          </Link>
+        </div>
       </div>
 
       {/* 🔍 Search & Slug Filter Card */}

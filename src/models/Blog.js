@@ -5,11 +5,21 @@ const blogSchema = new mongoose.Schema({
         type: String,
         required: [true, 'Please add a title'],
         trim: true,
-        maxlength: [100, 'Title cannot be more than 100 characters']
+        maxlength: [200, 'Title cannot be more than 200 characters']
     },
     slug: {
         type: String,
         unique: true
+    },
+    metaTitle: {
+        type: String,
+        trim: true,
+        default: ''
+    },
+    metaDescription: {
+        type: String,
+        trim: true,
+        default: ''
     },
     content: {
         type: String,
@@ -18,6 +28,11 @@ const blogSchema = new mongoose.Schema({
     image: {
         type: String,
         default: 'no-photo.jpg'
+    },
+    ctaLink: {
+        type: String,
+        trim: true,
+        default: ''
     },
     author: {
         type: mongoose.Schema.ObjectId,

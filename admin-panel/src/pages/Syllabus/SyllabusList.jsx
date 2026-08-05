@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { Plus, Edit2, Trash2, Search, FileText, ExternalLink } from 'lucide-react';
+import { Plus, Edit2, Trash2, Search, FileText, ExternalLink, RefreshCw } from 'lucide-react';
 import api from '../../api/axios';
 
 const SyllabusList = () => {
@@ -59,10 +59,22 @@ const SyllabusList = () => {
           <h1 style={{ fontSize: '24px', marginBottom: '4px' }}>Syllabus PDFs</h1>
           <p style={{ color: 'var(--text-muted)', fontSize: '14px' }}>Upload and manage PDF documents for skill slugs.</p>
         </div>
-        <Link to="/syllabus/create" className="btn btn-primary" style={{ padding: '12px 20px' }}>
-          <Plus size={18} />
-          Upload PDF
-        </Link>
+        <div style={{ display: 'flex', gap: '10px' }}>
+          <button 
+            onClick={fetchSyllabus} 
+            disabled={loading}
+            className="btn btn-secondary" 
+            style={{ padding: '12px 18px', display: 'flex', alignItems: 'center', gap: '8px' }}
+            title="Refresh Syllabus PDFs"
+          >
+            <RefreshCw size={18} className={loading ? 'spin-icon' : ''} />
+            Refresh
+          </button>
+          <Link to="/syllabus/create" className="btn btn-primary" style={{ padding: '12px 20px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <Plus size={18} />
+            Upload PDF
+          </Link>
+        </div>
       </div>
 
       <div className="card" style={{ padding: '20px', marginBottom: '24px' }}>

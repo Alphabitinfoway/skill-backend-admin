@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { Plus, Edit2, Trash2, Search, Image as ImageIcon, FileText } from 'lucide-react';
+import { Plus, Edit2, Trash2, Search, Image as ImageIcon, FileText, RefreshCw } from 'lucide-react';
 import api from '../../api/axios';
 
 const BlogList = () => {
@@ -47,10 +47,22 @@ const BlogList = () => {
           <h1 style={{ fontSize: '24px', marginBottom: '4px' }}>Blogs</h1>
           <p style={{ color: 'var(--text-muted)', fontSize: '14px' }}>Manage and organize your blog posts.</p>
         </div>
-        <Link to="/blogs/create" className="btn btn-primary" style={{ padding: '12px 20px' }}>
-          <Plus size={18} />
-          Create Blog
-        </Link>
+        <div style={{ display: 'flex', gap: '10px' }}>
+          <button 
+            onClick={fetchBlogs} 
+            disabled={loading}
+            className="btn btn-secondary" 
+            style={{ padding: '12px 18px', display: 'flex', alignItems: 'center', gap: '8px' }}
+            title="Refresh Blogs List"
+          >
+            <RefreshCw size={18} className={loading ? 'spin-icon' : ''} />
+            Refresh
+          </button>
+          <Link to="/blogs/create" className="btn btn-primary" style={{ padding: '12px 20px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <Plus size={18} />
+            Create Blog
+          </Link>
+        </div>
       </div>
 
       <div className="card" style={{ padding: '20px', marginBottom: '24px' }}>

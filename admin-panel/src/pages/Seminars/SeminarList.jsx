@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { Trash2, Search, Download, Calendar, Users, Award, BookOpen, AlertCircle, X } from 'lucide-react';
+import { Trash2, Search, Download, Calendar, Users, Award, BookOpen, AlertCircle, X, RefreshCw } from 'lucide-react';
 import api from '../../api/axios';
 
 const SeminarList = () => {
@@ -210,10 +210,22 @@ const SeminarList = () => {
           <h1 style={{ fontSize: '24px', marginBottom: '4px' }}>Seminar Registrations</h1>
           <p style={{ color: 'var(--text-muted)', fontSize: '14px' }}>Monitor and manage registrations for educational seminars.</p>
         </div>
-        <button onClick={handleExportCSV} className="btn btn-primary" style={{ padding: '12px 20px', display: 'flex', alignItems: 'center', gap: '8px' }}>
-          <Download size={18} />
-          Export CSV
-        </button>
+        <div style={{ display: 'flex', gap: '10px' }}>
+          <button 
+            onClick={() => { fetchRegistrations(); fetchStats(); }} 
+            disabled={loading}
+            className="btn btn-secondary" 
+            style={{ padding: '12px 18px', display: 'flex', alignItems: 'center', gap: '8px' }}
+            title="Refresh Registrations Data"
+          >
+            <RefreshCw size={18} className={loading ? 'spin-icon' : ''} />
+            Refresh
+          </button>
+          <button onClick={handleExportCSV} className="btn btn-primary" style={{ padding: '12px 20px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <Download size={18} />
+            Export CSV
+          </button>
+        </div>
       </div>
 
       {/* Statistics Cards */}

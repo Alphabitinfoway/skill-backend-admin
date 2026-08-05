@@ -350,4 +350,92 @@ Activate Seminar Event (Admin)
 - URL     : /admin/seminar-events/:id/activate
 - Headers : Key: Authorization, Value: Bearer <your_jwt_token>
 
+
 ====================================================================
+9. CONTACT FORM & INQUIRIES
+====================================================================
+
+Submit Contact Form Message (Public Frontend)
+- Method  : POST
+- URL     : /contacts
+- Headers : Content-Type: application/json
+- Auth    : None
+- Body (JSON):
+{
+  "firstName": "John",
+  "lastName": "Doe",
+  "email": "john.doe@example.com",
+  "contactNumber": "9876543210",
+  "subject": "Inquiry regarding MERN Stack Course",
+  "message": "Hello, I would like to get more information about the upcoming course schedule and fees."
+}
+- Response Example:
+{
+  "success": true,
+  "message": "Contact form message submitted successfully.",
+  "data": {
+    "_id": "66a8d4e5f1234567890abcd",
+    "firstName": "John",
+    "lastName": "Doe",
+    "email": "john.doe@example.com",
+    "contactNumber": "9876543210",
+    "subject": "Inquiry regarding MERN Stack Course",
+    "message": "Hello, I would like to get more information...",
+    "status": "unread",
+    "createdAt": "2026-08-04T11:00:00.000Z"
+  }
+}
+
+Get All Contact Form Messages (Admin)
+- Method  : GET
+- URL     : /admin/contacts
+- Headers : Key: Authorization, Value: Bearer <your_jwt_token>
+- Response Example:
+{
+  "success": true,
+  "count": 1,
+  "data": [
+    {
+      "_id": "66a8d4e5f1234567890abcd",
+      "firstName": "John",
+      "lastName": "Doe",
+      "email": "john.doe@example.com",
+      "contactNumber": "9876543210",
+      "subject": "Inquiry regarding MERN Stack Course",
+      "message": "Hello, I would like to get more information...",
+      "status": "unread",
+      "createdAt": "2026-08-04T11:00:00.000Z"
+    }
+  ]
+}
+
+Update Contact Message Status (Admin)
+- Method  : PATCH
+- URL     : /admin/contacts/:id/status
+- Headers : Key: Authorization, Value: Bearer <your_jwt_token>, Content-Type: application/json
+- Body (JSON):
+{
+  "status": "read"
+}
+*Note:* Allowed status values: "unread" | "read" | "responded"
+- Response Example:
+{
+  "success": true,
+  "data": {
+    "_id": "66a8d4e5f1234567890abcd",
+    "status": "read"
+  }
+}
+
+Delete Contact Message By ID (Admin)
+- Method  : DELETE
+- URL     : /admin/contacts/:id
+- Headers : Key: Authorization, Value: Bearer <your_jwt_token>
+- Response Example:
+{
+  "success": true,
+  "data": {}
+}
+
+====================================================================
+

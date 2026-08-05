@@ -1496,6 +1496,17 @@ body {
   transform: scale(1.1);
 }
 
+/* Spinner Animation for Refresh Buttons */
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.spin-icon {
+  animation: spin 0.8s linear infinite;
+}
+
+
 
 
 

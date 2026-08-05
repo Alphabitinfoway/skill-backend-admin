@@ -7,6 +7,7 @@ import {
   Users, 
   BookOpen, 
   Calendar,
+  MessageSquare,
   ChevronRight,
   X
 } from 'lucide-react';
@@ -24,8 +25,9 @@ const Sidebar = ({ collapsed, mobileOpen, closeMobile }) => {
       ]
     },
     {
-      title: 'EVENTS & SIGNUPS',
+      title: 'EVENTS & INQUIRIES',
       items: [
+        { name: 'Contact Messages', path: '/contacts', icon: MessageSquare },
         { name: 'Seminar Events', path: '/seminar-events', icon: Calendar },
         { name: 'Student Registrations', path: '/seminars', icon: BookOpen }
       ]

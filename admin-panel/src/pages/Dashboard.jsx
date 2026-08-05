@@ -205,6 +205,16 @@ const Dashboard = () => {
           </p>
         </div>
         <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
+          <button
+            onClick={() => window.location.reload()}
+            disabled={loading}
+            className="btn btn-secondary"
+            style={{ display: 'flex', alignItems: 'center', gap: '8px' }}
+            title="Refresh live dashboard data"
+          >
+            <RefreshCw size={16} className={loading ? 'spin-icon' : ''} />
+            Refresh
+          </button>
           <Link to="/seminar-events/create" className="btn btn-secondary" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
             <Calendar size={16} />
             Seminar Events

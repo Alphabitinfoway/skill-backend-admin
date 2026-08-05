@@ -55,4 +55,12 @@ router.use('/syllabus', syllabusRoutes);
 const adminSyllabusRoutes = require('./adminSyllabusRoutes');
 router.use('/admin/syllabus', adminSyllabusRoutes);
 
+// Mount contact routes
+const contactRoutes = require('./contactRoutes');
+router.use('/contacts', contactRoutes);
+
+// Mount admin contact routes
+const adminContactRoutes = require('./adminContactRoutes');
+router.use('/admin/contacts', adminContactRoutes);
+
 module.exports = router;
