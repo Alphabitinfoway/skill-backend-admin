@@ -55,7 +55,6 @@ const updateBlogById = async (id, updateData, file) => {
     if (updateData.title && typeof updateData.title === 'string') blog.title = updateData.title;
     if (typeof updateData.metaTitle === 'string') blog.metaTitle = updateData.metaTitle;
     if (typeof updateData.metaDescription === 'string') blog.metaDescription = updateData.metaDescription;
-    if (typeof updateData.ctaLink === 'string') blog.ctaLink = updateData.ctaLink;
     if (updateData.content && typeof updateData.content === 'string') blog.content = updateData.content;
     if (updateData.image && typeof updateData.image === 'string') blog.image = updateData.image;
 

@@ -29,11 +29,6 @@ const blogSchema = new mongoose.Schema({
         type: String,
         default: 'no-photo.jpg'
     },
-    ctaLink: {
-        type: String,
-        trim: true,
-        default: ''
-    },
     author: {
         type: mongoose.Schema.ObjectId,
         ref: 'User',

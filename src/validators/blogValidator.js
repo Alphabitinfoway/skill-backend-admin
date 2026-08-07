@@ -4,7 +4,7 @@ const createBlogRules = [
     body('title')
         .notEmpty().withMessage('Please add a title')
         .isString().withMessage('Title must be text')
-        .isLength({ max: 100 }).withMessage('Title cannot be more than 100 characters'),
+        .isLength({ max: 200 }).withMessage('Title cannot be more than 200 characters'),
         
     body('content')
         .notEmpty().withMessage('Please add some content')
@@ -16,7 +16,7 @@ const updateBlogRules = [
         .optional()
         .notEmpty().withMessage('Title cannot be empty')
         .isString().withMessage('Title must be text')
-        .isLength({ max: 100 }).withMessage('Title cannot be more than 100 characters'),
+        .isLength({ max: 200 }).withMessage('Title cannot be more than 200 characters'),
         
     body('content')
         .optional()
