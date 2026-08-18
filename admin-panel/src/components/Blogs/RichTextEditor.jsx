@@ -282,7 +282,7 @@ const RichTextEditor = ({ value, onChange }) => {
           const parsedHtml = convertTextOrMarkdownToHtml(text);
 
           if (editorRef.current) {
-            editorRef.current.commands.setContent(parsedHtml, false);
+            editorRef.current.commands.insertContent(parsedHtml);
           } else {
             view.dispatch(view.state.tr.scrollIntoView());
           }
@@ -307,11 +307,11 @@ const RichTextEditor = ({ value, onChange }) => {
     editorRef.current = editor;
   }, [editor]);
 
-  // Sync external value changes
+  // Sync external value changes (only when editor is not actively focused by user)
   useEffect(() => {
     if (value !== undefined) {
       setHtmlSource(value || '');
-      if (editor && value !== editor.getHTML()) {
+      if (editor && !editor.isFocused && value !== editor.getHTML()) {
         editor.commands.setContent(value || '', false);
       }
     }
