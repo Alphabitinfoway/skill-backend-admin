@@ -38,6 +38,17 @@ function convertLegacyTextToHtml(text) {
     }
 
     const lines = block.split(/\r?\n/).map((l) => l.trim()).filter(Boolean);
+
+    // Markdown Table Check
+    if (lines.length >= 2 && lines.every((l) => l.startsWith('|') && l.endsWith('|')) && lines.some((l) => l.includes('---'))) {
+      const parseRow = (line) => line.slice(1, -1).split('|').map((c) => c.trim());
+      const headerCells = parseRow(lines[0]);
+      const dataLines = lines.slice(1).filter((l) => !l.includes('---'));
+      const theadHtml = `<thead><tr>${headerCells.map((c) => `<th>${c}</th>`).join('')}</tr></thead>`;
+      const tbodyHtml = `<tbody>${dataLines.map((l) => `<tr>${parseRow(l).map((c) => `<td>${c}</td>`).join('')}</tr>`).join('')}</tbody>`;
+      return `<table class="blog-content-table">${theadHtml}${tbodyHtml}</table>`;
+    }
+
     const bulletRegex = /^([•\-\*]|->|>|\d+[\.\)])\s+/;
     if (lines.some((l) => bulletRegex.test(l))) {
       const itemsHtml = lines.map((l) => `<li>${l.replace(bulletRegex, '')}</li>`).join('');
@@ -1007,7 +1018,108 @@ const BlogForm = () => {
                     )}
 
                     {/* Formatted Article Prose Content */}
-                    <div className="blog-prose-content" style={{ fontSize: '14px', lineHeight: '1.75', color: '#334155' }}>
+                    <div className="blog-prose-content">
+                      <style>{`
+                        .blog-prose-content {
+                          font-size: 14px;
+                          line-height: 1.75;
+                          color: #334155;
+                          word-break: break-word;
+                        }
+                        .blog-prose-content p {
+                          margin-bottom: 1.15rem;
+                        }
+                        .blog-prose-content h1 {
+                          font-size: 1.75rem;
+                          font-weight: 800;
+                          color: #0F172A;
+                          margin-top: 1.75rem;
+                          margin-bottom: 0.75rem;
+                          line-height: 1.25;
+                        }
+                        .blog-prose-content h2 {
+                          font-size: 1.35rem;
+                          font-weight: 700;
+                          color: #0F172A;
+                          margin-top: 1.5rem;
+                          margin-bottom: 0.65rem;
+                          line-height: 1.3;
+                        }
+                        .blog-prose-content h3 {
+                          font-size: 1.15rem;
+                          font-weight: 700;
+                          color: #0F172A;
+                          margin-top: 1.25rem;
+                          margin-bottom: 0.5rem;
+                          line-height: 1.35;
+                        }
+                        .blog-prose-content ul {
+                          list-style-type: disc;
+                          padding-left: 1.5rem;
+                          margin-bottom: 1.15rem;
+                        }
+                        .blog-prose-content ol {
+                          list-style-type: decimal;
+                          padding-left: 1.5rem;
+                          margin-bottom: 1.15rem;
+                        }
+                        .blog-prose-content li {
+                          margin-bottom: 0.35rem;
+                        }
+                        .blog-prose-content blockquote {
+                          border-left: 4px solid #7143FE;
+                          background: #F5F3FF;
+                          padding: 12px 18px;
+                          border-radius: 8px;
+                          margin: 1.25rem 0;
+                          color: #4C1D95;
+                          font-weight: 500;
+                        }
+                        .blog-prose-content a {
+                          color: #7143FE;
+                          text-decoration: underline;
+                          font-weight: 500;
+                        }
+                        .blog-prose-content img {
+                          max-width: 100%;
+                          height: auto;
+                          border-radius: 10px;
+                          margin: 1.25rem 0;
+                          display: block;
+                        }
+                        /* Table styling in preview */
+                        .blog-prose-content table {
+                          width: 100%;
+                          border-collapse: collapse;
+                          margin: 1.5rem 0;
+                          border: 1px solid #CBD5E1;
+                          border-radius: 8px;
+                          overflow: hidden;
+                          font-size: 13.5px;
+                          background: #FFFFFF;
+                        }
+                        .blog-prose-content th {
+                          background-color: #F8FAFC;
+                          color: #0F172A;
+                          font-weight: 700;
+                          text-align: left;
+                          padding: 10px 14px;
+                          border: 1px solid #CBD5E1;
+                          border-bottom: 2px solid #CBD5E1;
+                        }
+                        .blog-prose-content td {
+                          padding: 9px 14px;
+                          border: 1px solid #CBD5E1;
+                          color: #334155;
+                          vertical-align: top;
+                        }
+                        .blog-prose-content tr:nth-child(even) td {
+                          background-color: #FDFDFE;
+                        }
+                        .blog-prose-content tr:hover td {
+                          background-color: #F8FAFC;
+                        }
+                      `}</style>
                       {formData.content && formData.content !== '<p></p>' ? (
                         <div dangerouslySetInnerHTML={{ __html: formData.content }} />
                       ) : (

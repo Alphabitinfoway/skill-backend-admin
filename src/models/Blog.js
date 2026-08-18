@@ -32,29 +32,57 @@ const blogSchema = new mongoose.Schema({
     author: {
         type: mongoose.Schema.ObjectId,
         ref: 'User',
-        required: false // Change to true if authentication is strictly required
+        required: false
     }
 }, {
     timestamps: true
 });
 
-// Create blog slug from the title before saving
+// Helper to clean and normalize rich text table HTML
+function cleanBlogContent(content) {
+    if (!content || typeof content !== 'string') return content;
+    if (!content.includes('<table')) return content;
+
+    let formatted = content;
+
+    // Strip restrictive colgroup tags from rich-text outputs so table columns distribute naturally
+    formatted = formatted.replace(/<colgroup[\s\S]*?<\/colgroup>/gi, '');
+
+    // Ensure table has blog-content-table class
+    formatted = formatted.replace(/<table([^>]*)>/gi, (match, attrs) => {
+        let cleanAttrs = attrs || '';
+        if (!cleanAttrs.includes('class=')) {
+            cleanAttrs += ' class="blog-content-table"';
+        } else if (!cleanAttrs.includes('blog-content-table')) {
+            cleanAttrs = cleanAttrs.replace(/class="([^"]*)"/i, 'class="$1 blog-content-table"');
+        }
+        return '<table' + cleanAttrs + '>';
+    });
+
+    return formatted;
+}
+
+// Create blog slug from the title before saving and clean content
 blogSchema.pre('save', function() {
-    // If title was modified and the user didn't manually provide a custom slug
+    if (this.content) {
+        this.content = cleanBlogContent(this.content);
+    }
+
     if (this.isModified('title') && !this.isModified('slug')) {
         this.slug = this.title
             .toLowerCase()
-            .replace(/[^a-z0-9 -]/g, '') // remove invalid chars
-            .replace(/\s+/g, '-') // collapse whitespace and replace by -
-            .replace(/-+/g, '-'); // collapse dashes
-    } else if (this.isModified('slug')) {
-        // If a custom slug is provided, make sure it is properly formatted
+            .replace(/[^a-z0-9 -]/g, '')
+            .replace(/\s+/g, '-')
+            .replace(/-+/g, '-');
+    } else if (this.isModified('slug') && this.slug) {
         this.slug = this.slug
             .toLowerCase()
-            .replace(/[^a-z0-9 -]/g, '') // remove invalid chars
-            .replace(/\s+/g, '-') // collapse whitespace and replace by -
-            .replace(/-+/g, '-'); // collapse dashes
+            .replace(/[^a-z0-9 -]/g, '')
+            .replace(/\s+/g, '-')
+            .replace(/-+/g, '-');
     }
 });
 
 module.exports = mongoose.model('Blog', blogSchema);
+module.exports.cleanBlogContent = cleanBlogContent;
+module.exports.formatBlogContentTables = cleanBlogContent;

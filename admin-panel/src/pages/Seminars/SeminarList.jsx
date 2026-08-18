@@ -198,7 +198,7 @@ const SeminarList = () => {
         return { ...base, backgroundColor: '#fee2e2', color: '#991b1b' };
       case 'registered':
       default:
-        return { ...base, backgroundColor: '#e0f2fe', color: '#075985' };
+        return { ...base, backgroundColor: '#f3f4f6', color: '#92400e' };
     }
   };
 
