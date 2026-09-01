@@ -438,4 +438,65 @@ Delete Contact Message By ID (Admin)
 }
 
 ====================================================================
+10. UNIQUE VISITOR TRACKER & COUNTER
+====================================================================
+
+Record Visitor & Get Count (Call on Every Page Load)
+- Method  : GET
+- URL     : /visitors/count
+- Headers : None
+  *Testing Hint in Postman:*
+  Add header "X-Forwarded-For: 203.0.113.195" to simulate visits from different IPs.
+  Leaving headers empty will test with your local IP (127.0.0.1).
+- Auth    : None
+- Response Example (First visit from this IP):
+{
+  "success": true,
+  "totalCount": 1,
+  "isNewVisitor": true
+}
+- Response Example (Page refresh / revisit from same IP):
+{
+  "success": true,
+  "totalCount": 1,
+  "isNewVisitor": false
+}
+
+Get Total Unique Visitor Count (Without Recording a Visit)
+- Method  : GET
+- URL     : /visitors/total
+- Headers : None
+- Auth    : None
+- Response Example:
+{
+  "success": true,
+  "totalCount": 1
+}
+
+Get Visitor Analytics & Stats (Admin)
+- Method  : GET
+- URL     : /admin/visitors/stats
+- Headers : Key: Authorization, Value: Bearer <your_jwt_token>
+- Response Example:
+{
+  "success": true,
+  "data": {
+    "totalUnique": 1,
+    "todayUnique": 1,
+    "totalImpressions": 4,
+    "recentVisitors": [
+      {
+        "_id": "66a8d4e5f1234567890abcd",
+        "ip": "127.0.0.1",
+        "userAgent": "Mozilla/5.0...",
+        "visitCount": 4,
+        "lastVisitedAt": "2026-09-01T06:01:00.000Z",
+        "createdAt": "2026-09-01T05:30:00.000Z"
+      }
+    ]
+  }
+}
+
+====================================================================
+
 

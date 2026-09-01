@@ -30,18 +30,20 @@ const Dashboard = () => {
   const [seminarEvents, setSeminarEvents] = useState([]);
   const [blogs, setBlogs] = useState([]);
   const [meetings, setMeetings] = useState([]);
+  const [visitorStats, setVisitorStats] = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchDashboardData = async () => {
       try {
         setLoading(true);
-        const [statsRes, regsRes, eventsRes, blogsRes, meetingsRes] = await Promise.allSettled([
+        const [statsRes, regsRes, eventsRes, blogsRes, meetingsRes, visitorsRes] = await Promise.allSettled([
           api.get('/admin/seminars/stats'),
           api.get('/admin/seminars', { params: { limit: 5, page: 1 } }),
           api.get('/admin/seminar-events'),
           api.get('/admin/blogs'),
-          api.get('/admin/meetings')
+          api.get('/admin/meetings'),
+          api.get('/admin/visitors/stats')
         ]);
 
         if (statsRes.status === 'fulfilled' && statsRes.value.data?.success) {
@@ -62,6 +64,10 @@ const Dashboard = () => {
 
         if (meetingsRes.status === 'fulfilled' && meetingsRes.value.data?.success) {
           setMeetings(meetingsRes.value.data.data || []);
+        }
+
+        if (visitorsRes.status === 'fulfilled' && visitorsRes.value.data?.success) {
+          setVisitorStats(visitorsRes.value.data.data);
         }
       } catch (error) {
         console.error('Failed to fetch dashboard data', error);
@@ -185,6 +191,17 @@ const Dashboard = () => {
       color: '#d97706',
       bgColor: '#fef3c7',
       link: '/meetings'
+    },
+    {
+      title: 'Unique Website Visitors',
+      value: loading ? '...' : (visitorStats?.totalUnique?.toLocaleString() || '0'),
+      badge: visitorStats?.todayUnique > 0 ? `+${visitorStats.todayUnique} Today` : 'Live Track',
+      badgeBg: 'rgba(16, 185, 129, 0.12)',
+      badgeColor: '#059669',
+      icon: Globe,
+      color: '#2563eb',
+      bgColor: '#dbeafe',
+      link: '/visitors'
     }
   ];
 

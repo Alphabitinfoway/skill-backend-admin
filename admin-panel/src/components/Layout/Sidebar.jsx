@@ -9,6 +9,7 @@ import {
   Calendar,
   MessageSquare,
   ChevronRight,
+  Globe,
   X
 } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
@@ -21,7 +22,8 @@ const Sidebar = ({ collapsed, mobileOpen, closeMobile }) => {
     {
       title: 'MAIN',
       items: [
-        { name: 'Dashboard', path: '/', icon: LayoutDashboard }
+        { name: 'Dashboard', path: '/', icon: LayoutDashboard },
+        { name: 'Visitor Analytics', path: '/visitors', icon: Globe }
       ]
     },
     {

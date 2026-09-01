@@ -63,4 +63,12 @@ router.use('/contacts', contactRoutes);
 const adminContactRoutes = require('./adminContactRoutes');
 router.use('/admin/contacts', adminContactRoutes);
 
+// Mount visitor routes
+const visitorRoutes = require('./visitorRoutes');
+router.use('/visitors', visitorRoutes);
+
+// Mount admin visitor routes
+const adminVisitorRoutes = require('./adminVisitorRoutes');
+router.use('/admin/visitors', adminVisitorRoutes);
+
 module.exports = router;
