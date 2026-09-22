@@ -22,6 +22,14 @@ router.use('/blogs', blogRoutes);
 const adminBlogRoutes = require('./adminBlogRoutes');
 router.use('/admin/blogs', adminBlogRoutes);
 
+// Mount public case study routes
+const caseStudyRoutes = require('./caseStudyRoutes');
+router.use('/case-studies', caseStudyRoutes);
+
+// Mount admin case study routes
+const adminCaseStudyRoutes = require('./adminCaseStudyRoutes');
+router.use('/admin/case-studies', adminCaseStudyRoutes);
+
 // Mount public inquiry routes
 const inquiryRoutes = require('./inquiryRoutes');
 router.use('/inquiries', inquiryRoutes);

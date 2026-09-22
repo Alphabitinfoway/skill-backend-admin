@@ -3,6 +3,7 @@ import { Link, useLocation } from 'react-router-dom';
 import { 
   LayoutDashboard, 
   FileText, 
+  BriefcaseBusiness,
   LogOut, 
   Users, 
   BookOpen, 
@@ -38,6 +39,7 @@ const Sidebar = ({ collapsed, mobileOpen, closeMobile }) => {
       title: 'CONTENT MANAGEMENT',
       items: [
         { name: 'Blog Posts', path: '/blogs', icon: FileText },
+        { name: 'Case Studies', path: '/case-studies', icon: BriefcaseBusiness },
         { name: 'Syllabus / PDFs', path: '/syllabus', icon: BookOpen },
         { name: 'Meetings Glance', path: '/meetings', icon: Users }
       ]
