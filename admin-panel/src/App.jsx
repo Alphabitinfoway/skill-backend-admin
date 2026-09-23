@@ -11,6 +11,8 @@ const Login = lazy(() => import('./pages/Login'));
 const Dashboard = lazy(() => import('./pages/Dashboard'));
 const BlogList = lazy(() => import('./pages/Blogs/BlogList'));
 const BlogForm = lazy(() => import('./pages/Blogs/BlogForm'));
+const CaseStudyList = lazy(() => import('./pages/CaseStudies/CaseStudyList'));
+const CaseStudyForm = lazy(() => import('./pages/CaseStudies/CaseStudyForm'));
 const MeetingList = lazy(() => import('./pages/Meetings/MeetingList'));
 const MeetingForm = lazy(() => import('./pages/Meetings/MeetingForm'));
 const SeminarList = lazy(() => import('./pages/Seminars/SeminarList'));
@@ -42,6 +44,9 @@ function App() {
                 <Route path="/blogs" element={<BlogList />} />
                 <Route path="/blogs/create" element={<BlogForm />} />
                 <Route path="/blogs/edit/:id" element={<BlogForm />} />
+                <Route path="/case-studies" element={<CaseStudyList />} />
+                <Route path="/case-studies/create" element={<CaseStudyForm />} />
+                <Route path="/case-studies/edit/:id" element={<CaseStudyForm />} />
                 <Route path="/syllabus" element={<SyllabusList />} />
                 <Route path="/syllabus/create" element={<SyllabusForm />} />
                 <Route path="/syllabus/edit/:id" element={<SyllabusForm />} />

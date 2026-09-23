@@ -12,6 +12,7 @@ import {
   Calendar,
   BookOpen,
   FileText,
+  BriefcaseBusiness,
   Users,
   ShieldCheck,
   CheckCheck,
@@ -48,6 +49,7 @@ const Header = ({ collapsed, toggleCollapse, toggleMobileOpen }) => {
     { title: 'Seminar Events Management', category: 'Events', path: '/seminar-events', icon: Calendar },
     { title: 'Student Registrations', category: 'Events & Signups', path: '/seminars', icon: BookOpen },
     { title: 'Blog Posts Management', category: 'Content', path: '/blogs', icon: FileText },
+    { title: 'Case Studies Management', category: 'Content', path: '/case-studies', icon: BriefcaseBusiness },
     { title: 'Meetings & Inquiries Glance', category: 'Content Management', path: '/meetings', icon: Users }
   ];
 
@@ -288,6 +290,9 @@ const Header = ({ collapsed, toggleCollapse, toggleMobileOpen }) => {
     }
     if (path.startsWith('/blogs')) {
       return { title: 'Blog Posts Management', icon: FileText };
+    }
+    if (path.startsWith('/case-studies')) {
+      return { title: 'Case Studies Management', icon: BriefcaseBusiness };
     }
     if (path.startsWith('/meetings')) {
       return { title: 'Meeting Glances', icon: Users };
