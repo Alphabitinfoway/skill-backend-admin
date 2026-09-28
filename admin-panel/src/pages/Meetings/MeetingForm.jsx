@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate, useParams, Link } from 'react-router-dom';
 import { ArrowLeft, Save, Image as ImageIcon, Video, Play, Link2, X, ExternalLink, Film } from 'lucide-react';
 import api from '../../api/axios';
@@ -83,6 +83,8 @@ const MeetingForm = () => {
   const { id } = useParams();
   const isEditing = Boolean(id);
   const navigate = useNavigate();
+  const imageInput1Ref = useRef(null);
+  const imageInput2Ref = useRef(null);
 
   const [formData, setFormData] = useState({
     title: '',
@@ -95,10 +97,34 @@ const MeetingForm = () => {
   const [existingImage2, setExistingImage2] = useState(null);
   const [imageFile1, setImageFile1] = useState(null);
   const [imageFile2, setImageFile2] = useState(null);
+  const [imagePreview1, setImagePreview1] = useState(null);
+  const [imagePreview2, setImagePreview2] = useState(null);
   
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
   const [fetching, setFetching] = useState(isEditing);
+
+  useEffect(() => {
+    if (!imageFile1) {
+      setImagePreview1(null);
+      return;
+    }
+
+    const previewUrl = URL.createObjectURL(imageFile1);
+    setImagePreview1(previewUrl);
+    return () => URL.revokeObjectURL(previewUrl);
+  }, [imageFile1]);
+
+  useEffect(() => {
+    if (!imageFile2) {
+      setImagePreview2(null);
+      return;
+    }
+
+    const previewUrl = URL.createObjectURL(imageFile2);
+    setImagePreview2(previewUrl);
+    return () => URL.revokeObjectURL(previewUrl);
+  }, [imageFile2]);
 
   useEffect(() => {
     if (isEditing) {
@@ -118,7 +144,7 @@ const MeetingForm = () => {
           if (meetingData.image2 && meetingData.image2 !== 'no-photo.jpg') {
             setExistingImage2(meetingData.image2.startsWith('http') ? meetingData.image2 : `http://localhost:5000/${meetingData.image2}`);
           }
-        } catch (error) {
+        } catch {
           alert('Failed to fetch meeting details');
           navigate('/meetings');
         } finally {
@@ -466,9 +492,26 @@ const MeetingForm = () => {
                   marginBottom: '8px'
                 }}>
                   {imageFile1 ? (
-                    <p style={{ fontSize: '13px', color: 'var(--primary)', marginBottom: '8px', fontWeight: '500' }}>
-                      Selected: {imageFile1.name}
-                    </p>
+                    <div style={{ marginBottom: '8px' }}>
+                      <img src={imagePreview1} alt="Selected first image preview" style={{ maxWidth: '100%', maxHeight: '140px', objectFit: 'contain', display: 'block', margin: '0 auto 8px' }} />
+                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
+                        <p style={{ fontSize: '13px', color: 'var(--primary)', margin: 0, fontWeight: '500' }}>
+                          Selected: {imageFile1.name}
+                        </p>
+                        <button
+                          type="button"
+                          className="btn-icon"
+                          title="Remove first image"
+                          aria-label="Remove first image"
+                          onClick={() => {
+                            setImageFile1(null);
+                            if (imageInput1Ref.current) imageInput1Ref.current.value = '';
+                          }}
+                        >
+                          <X size={16} />
+                        </button>
+                      </div>
+                    </div>
                   ) : existingImage1 ? (
                     <div style={{ marginBottom: '8px', borderRadius: 'var(--radius-sm)', overflow: 'hidden' }}>
                       <img src={existingImage1} alt="Current Cover 1" style={{ width: '100%', height: 'auto', display: 'block', maxHeight: '100px', objectFit: 'cover' }} />
@@ -479,6 +522,7 @@ const MeetingForm = () => {
                     </>
                   )}
                   <input
+                    ref={imageInput1Ref}
                     type="file"
                     id="image1"
                     name="image1"
@@ -501,9 +545,26 @@ const MeetingForm = () => {
                   background: 'var(--bg-main)'
                 }}>
                   {imageFile2 ? (
-                    <p style={{ fontSize: '13px', color: 'var(--primary)', marginBottom: '8px', fontWeight: '500' }}>
-                      Selected: {imageFile2.name}
-                    </p>
+                    <div style={{ marginBottom: '8px' }}>
+                      <img src={imagePreview2} alt="Selected second image preview" style={{ maxWidth: '100%', maxHeight: '140px', objectFit: 'contain', display: 'block', margin: '0 auto 8px' }} />
+                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
+                        <p style={{ fontSize: '13px', color: 'var(--primary)', margin: 0, fontWeight: '500' }}>
+                          Selected: {imageFile2.name}
+                        </p>
+                        <button
+                          type="button"
+                          className="btn-icon"
+                          title="Remove second image"
+                          aria-label="Remove second image"
+                          onClick={() => {
+                            setImageFile2(null);
+                            if (imageInput2Ref.current) imageInput2Ref.current.value = '';
+                          }}
+                        >
+                          <X size={16} />
+                        </button>
+                      </div>
+                    </div>
                   ) : existingImage2 ? (
                     <div style={{ marginBottom: '8px', borderRadius: 'var(--radius-sm)', overflow: 'hidden' }}>
                       <img src={existingImage2} alt="Current Cover 2" style={{ width: '100%', height: 'auto', display: 'block', maxHeight: '100px', objectFit: 'cover' }} />
@@ -514,6 +575,7 @@ const MeetingForm = () => {
                     </>
                   )}
                   <input
+                    ref={imageInput2Ref}
                     type="file"
                     id="image2"
                     name="image2"

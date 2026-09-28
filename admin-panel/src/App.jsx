@@ -22,6 +22,9 @@ const SyllabusList = lazy(() => import('./pages/Syllabus/SyllabusList'));
 const SyllabusForm = lazy(() => import('./pages/Syllabus/SyllabusForm'));
 const ContactList = lazy(() => import('./pages/Contacts/ContactList'));
 const VisitorList = lazy(() => import('./pages/Visitors/VisitorList'));
+const JobList = lazy(() => import('./pages/Careers/JobList'));
+const JobForm = lazy(() => import('./pages/Careers/JobForm'));
+const ApplicationList = lazy(() => import('./pages/Careers/ApplicationList'));
 
 // Loading component for Suspense fallback
 const PageLoader = () => (
@@ -59,6 +62,10 @@ function App() {
                 <Route path="/seminar-events/edit/:id" element={<SeminarEventForm />} />
                 <Route path="/contacts" element={<ContactList />} />
                 <Route path="/visitors" element={<VisitorList />} />
+                <Route path="/jobs" element={<JobList />} />
+                <Route path="/jobs/create" element={<JobForm />} />
+                <Route path="/jobs/edit/:id" element={<JobForm />} />
+                <Route path="/applications" element={<ApplicationList />} />
               </Route>
             </Route>
 
