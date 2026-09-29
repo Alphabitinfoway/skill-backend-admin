@@ -1,9 +1,10 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { BriefcaseBusiness, Edit2, Eye, Plus, RefreshCw, Search, Trash2, X } from 'lucide-react';
+import { BriefcaseBusiness, Edit2, Eye, Plus, RefreshCw, Search, Trash2, X, Check } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import api from '../../api/axios';
 
 const jobStatuses = ['draft', 'published', 'closed'];
+const formatJobTypes = (jobType) => Array.isArray(jobType) ? jobType.join(', ') : jobType || '';
 
 const JobList = () => {
   const [jobs, setJobs] = useState([]);
@@ -51,7 +52,7 @@ const JobList = () => {
   };
 
   const filteredJobs = jobs.filter((job) =>
-    `${job.title} ${job.department}`.toLowerCase().includes(searchTerm.toLowerCase())
+    `${job.title} ${job.department} ${job.location || ''} ${formatJobTypes(job.jobType)}`.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   return (
@@ -77,7 +78,7 @@ const JobList = () => {
           <input
             type="search"
             className="input-field"
-            placeholder="Search title or department..."
+            placeholder="Search title, department, or location..."
             value={searchTerm}
             onChange={(event) => setSearchTerm(event.target.value)}
             style={{ width: '100%', paddingLeft: '42px' }}
@@ -113,7 +114,14 @@ const JobList = () => {
                   <tr key={job._id}>
                     <td>
                       <div style={{ fontWeight: '600', color: 'var(--text-main)' }}>{job.title}</div>
-                      <div style={{ maxWidth: '460px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', color: 'var(--text-muted)', fontSize: '12px', marginTop: '4px' }} title={job.description}>
+                      {(job.location || job.jobType || job.experience) && (
+                        <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', marginTop: '3px', fontSize: '12px', color: 'var(--text-muted)' }}>
+                          {job.location && <span>📍 {job.location}</span>}
+                          {formatJobTypes(job.jobType) && <span>• {formatJobTypes(job.jobType)}</span>}
+                          {job.experience && <span>• {job.experience}</span>}
+                        </div>
+                      )}
+                      <div style={{ maxWidth: '460px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', color: 'var(--text-muted)', fontSize: '12px', marginTop: '3px' }} title={job.description}>
                         {job.description}
                       </div>
                     </td>
@@ -170,14 +178,73 @@ const JobList = () => {
               <X size={18} />
             </button>
             <h2 id="job-detail-title" style={{ fontSize: '20px', margin: '0 40px 6px 0' }}>{selectedJob.title}</h2>
-            <p style={{ color: 'var(--text-muted)', margin: '0 0 20px' }}>{selectedJob.department}</p>
-            <div style={{ display: 'flex', gap: '24px', flexWrap: 'wrap', marginBottom: '20px', fontSize: '13px' }}>
+            <p style={{ color: 'var(--text-muted)', margin: '0 0 16px' }}>{selectedJob.department}</p>
+
+            <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap', marginBottom: '20px', fontSize: '13px', background: '#f8fafc', padding: '12px 16px', borderRadius: 'var(--radius-sm)', border: '1px solid var(--border-color)' }}>
+              {selectedJob.location && <span><strong>Location:</strong> {selectedJob.location}</span>}
+              {formatJobTypes(selectedJob.jobType) && <span><strong>Type:</strong> {formatJobTypes(selectedJob.jobType)}</span>}
+              {selectedJob.experience && <span><strong>Experience:</strong> {selectedJob.experience}</span>}
               <span><strong>Status:</strong> <span style={{ textTransform: 'capitalize' }}>{selectedJob.status}</span></span>
-              <span><strong>Display order:</strong> {selectedJob.sortOrder ?? 0}</span>
-              {selectedJob.createdAt && <span><strong>Created:</strong> {new Date(selectedJob.createdAt).toLocaleDateString()}</span>}
+              <span><strong>Order:</strong> {selectedJob.sortOrder ?? 0}</span>
             </div>
-            <h3 style={{ fontSize: '15px', marginBottom: '8px' }}>Description</h3>
-            <p style={{ whiteSpace: 'pre-wrap', overflowWrap: 'anywhere', color: 'var(--text-muted)', lineHeight: 1.6, margin: 0 }}>{selectedJob.description}</p>
+
+            <div style={{ marginBottom: '18px' }}>
+              <h3 style={{ fontSize: '15px', marginBottom: '8px' }}>About the Job</h3>
+              <p style={{ whiteSpace: 'pre-wrap', overflowWrap: 'anywhere', color: 'var(--text-muted)', lineHeight: 1.6, margin: 0, fontSize: '14px' }}>
+                {selectedJob.description}
+              </p>
+            </div>
+
+            {selectedJob.responsibilities?.length > 0 && (
+              <div style={{ marginBottom: '18px' }}>
+                <h3 style={{ fontSize: '15px', marginBottom: '8px' }}>Responsibilities</h3>
+                <ul style={{ margin: 0, paddingLeft: 0, listStyle: 'none', display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                  {selectedJob.responsibilities.map((resp, idx) => (
+                    <li key={idx} style={{ display: 'flex', alignItems: 'flex-start', gap: '8px', fontSize: '13.5px', color: 'var(--text-muted)' }}>
+                      <Check size={16} style={{ color: 'var(--success)', flexShrink: 0, marginTop: '2px' }} />
+                      <span>{resp}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+
+            {selectedJob.requirements?.length > 0 && (
+              <div style={{ marginBottom: '18px' }}>
+                <h3 style={{ fontSize: '15px', marginBottom: '8px' }}>Requirements</h3>
+                <ul style={{ margin: 0, paddingLeft: 0, listStyle: 'none', display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                  {selectedJob.requirements.map((req, idx) => (
+                    <li key={idx} style={{ display: 'flex', alignItems: 'flex-start', gap: '8px', fontSize: '13.5px', color: 'var(--text-muted)' }}>
+                      <Check size={16} style={{ color: 'var(--primary)', flexShrink: 0, marginTop: '2px' }} />
+                      <span>{req}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+
+            {selectedJob.skills?.length > 0 && (
+              <div style={{ marginBottom: '10px' }}>
+                <h3 style={{ fontSize: '15px', marginBottom: '8px' }}>Skills</h3>
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
+                  {selectedJob.skills.map((skill, idx) => (
+                    <span
+                      key={idx}
+                      style={{
+                        background: '#f1f5f9',
+                        border: '1px solid var(--border-color)',
+                        padding: '4px 10px',
+                        borderRadius: 'var(--radius-sm)',
+                        fontSize: '12.5px',
+                        fontWeight: '500'
+                      }}
+                    >
+                      {skill}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
         </div>
       )}

@@ -8,7 +8,7 @@ const getPublicJobs = catchAsync(async (req, res) => {
         Job.find({
             status: 'published',
             ...(req.query.department ? { department: req.query.department } : {})
-        }).select('department title description sortOrder createdAt updatedAt')
+        }).select('department title location jobType experience description responsibilities requirements skills sortOrder createdAt updatedAt')
             .sort({ sortOrder: 1, createdAt: -1 })
     ]);
 
@@ -18,6 +18,14 @@ const getPublicJobs = catchAsync(async (req, res) => {
         departments: departments.sort((left, right) => left.localeCompare(right)),
         data: jobs
     });
+});
+
+const getPublicJobById = catchAsync(async (req, res, next) => {
+    const job = await Job.findOne({ _id: req.params.id, status: 'published' })
+        .select('department title location jobType experience description responsibilities requirements skills createdAt updatedAt');
+    if (!job) return next(new AppError('Job not found', 404));
+
+    res.status(200).json({ success: true, data: job });
 });
 
 const getJobs = catchAsync(async (req, res) => {
@@ -74,6 +82,7 @@ const deleteJob = catchAsync(async (req, res, next) => {
 
 module.exports = {
     getPublicJobs,
+    getPublicJobById,
     getJobs,
     getJobById,
     createJob,
