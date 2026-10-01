@@ -1,6 +1,7 @@
 const cloudinary = require('cloudinary').v2;
 const { CloudinaryStorage } = require('multer-storage-cloudinary');
 const multer = require('multer');
+const AppError = require('../utils/AppError');
 
 // Configure Cloudinary with your credentials
 cloudinary.config({
@@ -35,11 +36,45 @@ const storage = new CloudinaryStorage({
     }
 });
 
+const resumeStorage = new CloudinaryStorage({
+    cloudinary,
+    params: async (req, file) => {
+        const safeName = file.originalname
+            .replace(/\.[^/.]+$/, '')
+            .replace(/[^a-zA-Z0-9_-]/g, '_');
+        const extension = file.originalname.split('.').pop().toLowerCase();
+
+        return {
+            folder: 'alphabit_skill_career_resumes',
+            resource_type: 'raw',
+            public_id: `resume-${Date.now()}-${safeName}.${extension}`
+        };
+    }
+});
+
 // Initialize multer with Cloudinary storage
 const upload = multer({ storage: storage });
+const resumeUpload = multer({
+    storage: resumeStorage,
+    limits: { fileSize: 10 * 1024 * 1024 },
+    fileFilter: (req, file, callback) => {
+        const allowedTypes = [
+            'application/pdf',
+            'application/msword',
+            'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+        ];
+
+        if (allowedTypes.includes(file.mimetype)) {
+            return callback(null, true);
+        }
+
+        callback(new AppError('Resume must be a PDF, DOC, or DOCX file', 400));
+    }
+});
 
 module.exports = {
     cloudinary,
     upload,
+    resumeUpload,
     pdfUpload: upload
 };

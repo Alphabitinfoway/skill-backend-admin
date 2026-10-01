@@ -36,6 +36,13 @@ const Sidebar = ({ collapsed, mobileOpen, closeMobile }) => {
       ]
     },
     {
+      title: 'CAREER MANAGEMENT',
+      items: [
+        { name: 'Jobs', path: '/jobs', icon: BriefcaseBusiness },
+        { name: 'Applications', path: '/applications', icon: Users }
+      ]
+    },
+    {
       title: 'CONTENT MANAGEMENT',
       items: [
         { name: 'Blog Posts', path: '/blogs', icon: FileText },

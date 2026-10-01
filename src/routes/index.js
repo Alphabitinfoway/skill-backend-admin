@@ -14,6 +14,16 @@ router.use('/users', userRoutes);
 const uploadRoutes = require('./uploadRoutes');
 router.use('/upload', uploadRoutes);
 
+// Mount career routes
+const jobRoutes = require('./jobRoutes');
+router.use('/jobs', jobRoutes);
+const adminJobRoutes = require('./adminJobRoutes');
+router.use('/admin/jobs', adminJobRoutes);
+const applicationRoutes = require('./applicationRoutes');
+router.use('/applications', applicationRoutes);
+const adminApplicationRoutes = require('./adminApplicationRoutes');
+router.use('/admin/applications', adminApplicationRoutes);
+
 // Mount public blog routes
 const blogRoutes = require('./blogRoutes');
 router.use('/blogs', blogRoutes);
