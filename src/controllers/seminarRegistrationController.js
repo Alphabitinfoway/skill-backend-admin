@@ -11,14 +11,14 @@ const escapeRegex = (string) => string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 // @route   POST /api/seminars/register
 // @access  Public
 const registerForSeminar = catchAsync(async (req, res) => {
-    try {
-        const registration = await SeminarRegistration.create(req.body);
+  try {
+    const registration = await SeminarRegistration.create(req.body);
 
-        // Send email to student
-        const studentEmailOptions = {
-            email: registration.email,
-            subject: `Seminar Registration Confirmed: ${registration.seminarBatch}`,
-            html: `
+    // Send email to student
+    const studentEmailOptions = {
+      email: registration.email,
+      subject: `Seminar Registration Confirmed: ${registration.seminarBatch}`,
+      html: `
                 <!DOCTYPE html>
                 <html lang="en">
                 <head>
@@ -175,13 +175,13 @@ const registerForSeminar = catchAsync(async (req, res) => {
                 </body>
                 </html>
             `
-        };
+    };
 
-        // Send email to admin
-        const adminEmailOptions = {
-            email: process.env.ADMIN_EMAIL || 'admin@example.com',
-            subject: `New Seminar Registration: ${registration.name}`,
-            html: `
+    // Send email to admin
+    const adminEmailOptions = {
+      email: process.env.ADMIN_EMAIL || 'admin@example.com',
+      subject: `New Seminar Registration: ${registration.name}`,
+      html: `
                 <div style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f3f4f6; padding: 30px; color: #1f2937;">
                     <div style="max-width: 600px; margin: 0 auto; background-color: #ffffff; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06); border-top: 6px solid #e11d48;">
                         <div style="padding: 24px; text-align: center; background-color: #f8fafc; border-bottom: 1px solid #e2e8f0;">
@@ -232,251 +232,241 @@ const registerForSeminar = catchAsync(async (req, res) => {
                     </div>
                 </div>
             `
-        };
+    };
 
-        // Send emails safely using Promise.allSettled so cloud containers (Render/Vercel)
-        // do not freeze/terminate the process before the email handshake finishes.
-        const [studentEmailResult, adminEmailResult] = await Promise.allSettled([
-            sendEmail(studentEmailOptions),
-            sendEmail(adminEmailOptions)
-        ]);
+    // Send emails asynchronously (don't block response)
+    sendEmail(studentEmailOptions).catch(err => console.error('Student email error:', err));
+    sendEmail(adminEmailOptions).catch(err => console.error('Admin email error:', err));
 
-        if (studentEmailResult.status === 'rejected') {
-            console.error('Student email error:', studentEmailResult.reason);
-        }
-        if (adminEmailResult.status === 'rejected') {
-            console.error('Admin email error:', adminEmailResult.reason);
-        }
-
-        res.status(201).json({
-            success: true,
-            message: 'Registered successfully',
-            data: registration
-        });
-    } catch (error) {
-        // E11000 is a duplicate key error in MongoDB
-        if (error.code === 11000) {
-            throw new AppError('You have already registered for this seminar with this phone number.', 409);
-        }
-        throw error;
+    res.status(201).json({
+      success: true,
+      message: 'Registered successfully',
+      data: registration
+    });
+  } catch (error) {
+    // E11000 is a duplicate key error in MongoDB
+    if (error.code === 11000) {
+      throw new AppError('You have already registered for this seminar with this phone number.', 409);
     }
+    throw error;
+  }
 });
 
 // @desc    Get all seminar registrations (with pagination, filtering, search)
 // @route   GET /api/admin/seminars
 // @access  Private/Admin
 const getSeminarRegistrations = catchAsync(async (req, res) => {
-    const { batch, status, search, page = 1, limit = 10 } = req.query;
+  const { batch, status, search, page = 1, limit = 10 } = req.query;
 
-    const query = {};
+  const query = {};
 
-    if (batch) {
-        query.seminarBatch = batch;
-    }
+  if (batch) {
+    query.seminarBatch = batch;
+  }
 
-    if (status) {
-        query.status = status;
-    }
+  if (status) {
+    query.status = status;
+  }
 
-    if (search && search.trim()) {
-        const safeSearch = escapeRegex(search.trim());
-        const searchRegex = new RegExp(safeSearch, 'i');
-        query.$or = [
-            { name: searchRegex },
-            { phone: searchRegex },
-            { email: searchRegex },
-            { college: searchRegex },
-            { course: searchRegex },
-            { city: searchRegex },
-            { source: searchRegex },
-            { seminarBatch: searchRegex }
-        ];
-    }
+  if (search && search.trim()) {
+    const safeSearch = escapeRegex(search.trim());
+    const searchRegex = new RegExp(safeSearch, 'i');
+    query.$or = [
+      { name: searchRegex },
+      { phone: searchRegex },
+      { email: searchRegex },
+      { college: searchRegex },
+      { course: searchRegex },
+      { city: searchRegex },
+      { source: searchRegex },
+      { seminarBatch: searchRegex }
+    ];
+  }
 
-    const skipIndex = (parseInt(page, 10) - 1) * parseInt(limit, 10);
-    const total = await SeminarRegistration.countDocuments(query);
-    const registrations = await SeminarRegistration.find(query)
-        .sort({ createdAt: -1 })
-        .skip(skipIndex)
-        .limit(parseInt(limit, 10));
+  const skipIndex = (parseInt(page, 10) - 1) * parseInt(limit, 10);
+  const total = await SeminarRegistration.countDocuments(query);
+  const registrations = await SeminarRegistration.find(query)
+    .sort({ createdAt: -1 })
+    .skip(skipIndex)
+    .limit(parseInt(limit, 10));
 
-    res.status(200).json({
-        success: true,
-        data: registrations,
-        total,
-        page: parseInt(page, 10),
-        totalPages: Math.ceil(total / parseInt(limit, 10))
-    });
+  res.status(200).json({
+    success: true,
+    data: registrations,
+    total,
+    page: parseInt(page, 10),
+    totalPages: Math.ceil(total / parseInt(limit, 10))
+  });
 });
 
 // @desc    Get single seminar registration by ID
 // @route   GET /api/admin/seminars/:id
 // @access  Private/Admin
 const getSeminarRegistrationById = catchAsync(async (req, res) => {
-    const registration = await SeminarRegistration.findById(req.params.id);
-    if (!registration) {
-        throw new AppError('Registration not found', 404);
-    }
-    res.status(200).json({
-        success: true,
-        data: registration
-    });
+  const registration = await SeminarRegistration.findById(req.params.id);
+  if (!registration) {
+    throw new AppError('Registration not found', 404);
+  }
+  res.status(200).json({
+    success: true,
+    data: registration
+  });
 });
 
 // @desc    Update status of a seminar registration
 // @route   PUT /api/admin/seminars/:id
 // @access  Private/Admin
 const updateSeminarStatus = catchAsync(async (req, res) => {
-    const { status } = req.body;
-    
-    const registration = await SeminarRegistration.findByIdAndUpdate(
-        req.params.id,
-        { status },
-        { returnDocument: 'after', runValidators: true }
-    );
+  const { status } = req.body;
 
-    if (!registration) {
-        throw new AppError('Registration not found', 404);
-    }
+  const registration = await SeminarRegistration.findByIdAndUpdate(
+    req.params.id,
+    { status },
+    { returnDocument: 'after', runValidators: true }
+  );
 
-    res.status(200).json({
-        success: true,
-        data: registration
-    });
+  if (!registration) {
+    throw new AppError('Registration not found', 404);
+  }
+
+  res.status(200).json({
+    success: true,
+    data: registration
+  });
 });
 
 // @desc    Delete a seminar registration permanently
 // @route   DELETE /api/admin/seminars/:id
 // @access  Private/Admin
 const deleteSeminarRegistration = catchAsync(async (req, res) => {
-    const registration = await SeminarRegistration.findByIdAndDelete(req.params.id);
-    if (!registration) {
-        throw new AppError('Registration not found', 404);
-    }
-    res.status(200).json({
-        success: true,
-        data: {}
-    });
+  const registration = await SeminarRegistration.findByIdAndDelete(req.params.id);
+  if (!registration) {
+    throw new AppError('Registration not found', 404);
+  }
+  res.status(200).json({
+    success: true,
+    data: {}
+  });
 });
 
 // @desc    Export seminar registrations as CSV
 // @route   GET /api/admin/seminars/export
 // @access  Private/Admin
 const exportSeminarRegistrations = catchAsync(async (req, res) => {
-    const { batch, status, search } = req.query;
+  const { batch, status, search } = req.query;
 
-    const query = {};
+  const query = {};
 
-    if (batch) {
-        query.seminarBatch = batch;
-    }
+  if (batch) {
+    query.seminarBatch = batch;
+  }
 
-    if (status) {
-        query.status = status;
-    }
+  if (status) {
+    query.status = status;
+  }
 
-    if (search && search.trim()) {
-        const safeSearch = escapeRegex(search.trim());
-        const searchRegex = new RegExp(safeSearch, 'i');
-        query.$or = [
-            { name: searchRegex },
-            { phone: searchRegex },
-            { email: searchRegex },
-            { college: searchRegex },
-            { course: searchRegex },
-            { city: searchRegex },
-            { source: searchRegex },
-            { seminarBatch: searchRegex }
-        ];
-    }
+  if (search && search.trim()) {
+    const safeSearch = escapeRegex(search.trim());
+    const searchRegex = new RegExp(safeSearch, 'i');
+    query.$or = [
+      { name: searchRegex },
+      { phone: searchRegex },
+      { email: searchRegex },
+      { college: searchRegex },
+      { course: searchRegex },
+      { city: searchRegex },
+      { source: searchRegex },
+      { seminarBatch: searchRegex }
+    ];
+  }
 
-    const registrations = await SeminarRegistration.find(query).sort({ createdAt: -1 });
+  const registrations = await SeminarRegistration.find(query).sort({ createdAt: -1 });
 
-    // Custom CSV builder
-    const fields = ['Name', 'Phone', 'Email', 'College', 'Course', 'City', 'Source', 'Batch', 'Status', 'Registered On'];
-    let csvContent = fields.join(',') + '\r\n';
+  // Custom CSV builder
+  const fields = ['Name', 'Phone', 'Email', 'College', 'Course', 'City', 'Source', 'Batch', 'Status', 'Registered On'];
+  let csvContent = fields.join(',') + '\r\n';
 
-    registrations.forEach((reg) => {
-        const formattedDate = reg.createdAt ? reg.createdAt.toISOString() : '';
-        const row = [
-            `"${(reg.name || '').replace(/"/g, '""')}"`,
-            `"${reg.phone || ''}"`,
-            `"${(reg.email || '').replace(/"/g, '""')}"`,
-            `"${(reg.college || '').replace(/"/g, '""')}"`,
-            `"${(reg.course || '').replace(/"/g, '""')}"`,
-            `"${(reg.city || '').replace(/"/g, '""')}"`,
-            `"${reg.source || ''}"`,
-            `"${(reg.seminarBatch || '').replace(/"/g, '""')}"`,
-            `"${reg.status || ''}"`,
-            `"${formattedDate}"`
-        ];
-        csvContent += row.join(',') + '\r\n';
-    });
+  registrations.forEach((reg) => {
+    const formattedDate = reg.createdAt ? reg.createdAt.toISOString() : '';
+    const row = [
+      `"${(reg.name || '').replace(/"/g, '""')}"`,
+      `"${reg.phone || ''}"`,
+      `"${(reg.email || '').replace(/"/g, '""')}"`,
+      `"${(reg.college || '').replace(/"/g, '""')}"`,
+      `"${(reg.course || '').replace(/"/g, '""')}"`,
+      `"${(reg.city || '').replace(/"/g, '""')}"`,
+      `"${reg.source || ''}"`,
+      `"${(reg.seminarBatch || '').replace(/"/g, '""')}"`,
+      `"${reg.status || ''}"`,
+      `"${formattedDate}"`
+    ];
+    csvContent += row.join(',') + '\r\n';
+  });
 
-    res.setHeader('Content-Type', 'text/csv');
-    res.setHeader('Content-Disposition', `attachment; filename=seminar_registrations_${Date.now()}.csv`);
-    res.status(200).send(csvContent);
+  res.setHeader('Content-Type', 'text/csv');
+  res.setHeader('Content-Disposition', `attachment; filename=seminar_registrations_${Date.now()}.csv`);
+  res.status(200).send(csvContent);
 });
 
 // @desc    Get dashboard statistics for seminar registrations
 // @route   GET /api/admin/seminars/stats
 // @access  Private/Admin
 const getSeminarStats = catchAsync(async (req, res) => {
-    // Total count
-    const total = await SeminarRegistration.countDocuments();
+  // Total count
+  const total = await SeminarRegistration.countDocuments();
 
-    // Today's count
-    const startOfToday = new Date();
-    startOfToday.setHours(0, 0, 0, 0);
-    const todayCount = await SeminarRegistration.countDocuments({
-        createdAt: { $gte: startOfToday }
-    });
+  // Today's count
+  const startOfToday = new Date();
+  startOfToday.setHours(0, 0, 0, 0);
+  const todayCount = await SeminarRegistration.countDocuments({
+    createdAt: { $gte: startOfToday }
+  });
 
-    // Counts by status
-    const byStatusData = await SeminarRegistration.aggregate([
-        { $group: { _id: '$status', count: { $sum: 1 } } }
-    ]);
-    const byStatus = byStatusData.reduce((acc, curr) => {
-        acc[curr._id] = curr.count;
-        return acc;
-    }, {});
+  // Counts by status
+  const byStatusData = await SeminarRegistration.aggregate([
+    { $group: { _id: '$status', count: { $sum: 1 } } }
+  ]);
+  const byStatus = byStatusData.reduce((acc, curr) => {
+    acc[curr._id] = curr.count;
+    return acc;
+  }, {});
 
-    // Counts by source
-    const bySourceData = await SeminarRegistration.aggregate([
-        { $group: { _id: '$source', count: { $sum: 1 } } }
-    ]);
-    const bySource = bySourceData.reduce((acc, curr) => {
-        acc[curr._id] = curr.count;
-        return acc;
-    }, {});
+  // Counts by source
+  const bySourceData = await SeminarRegistration.aggregate([
+    { $group: { _id: '$source', count: { $sum: 1 } } }
+  ]);
+  const bySource = bySourceData.reduce((acc, curr) => {
+    acc[curr._id] = curr.count;
+    return acc;
+  }, {});
 
-    // Counts by batch
-    const byBatchData = await SeminarRegistration.aggregate([
-        { $group: { _id: '$seminarBatch', count: { $sum: 1 } } }
-    ]);
-    const byBatch = byBatchData.reduce((acc, curr) => {
-        acc[curr._id] = curr.count;
-        return acc;
-    }, {});
+  // Counts by batch
+  const byBatchData = await SeminarRegistration.aggregate([
+    { $group: { _id: '$seminarBatch', count: { $sum: 1 } } }
+  ]);
+  const byBatch = byBatchData.reduce((acc, curr) => {
+    acc[curr._id] = curr.count;
+    return acc;
+  }, {});
 
-    res.status(200).json({
-        success: true,
-        data: {
-            total,
-            todayCount,
-            byStatus,
-            bySource,
-            byBatch
-        }
-    });
+  res.status(200).json({
+    success: true,
+    data: {
+      total,
+      todayCount,
+      byStatus,
+      bySource,
+      byBatch
+    }
+  });
 });
 
 module.exports = {
-    registerForSeminar,
-    getSeminarRegistrations,
-    getSeminarRegistrationById,
-    updateSeminarStatus,
-    deleteSeminarRegistration,
-    exportSeminarRegistrations,
-    getSeminarStats
+  registerForSeminar,
+  getSeminarRegistrations,
+  getSeminarRegistrationById,
+  updateSeminarStatus,
+  deleteSeminarRegistration,
+  exportSeminarRegistrations,
+  getSeminarStats
 };
