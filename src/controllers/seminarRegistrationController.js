@@ -234,9 +234,19 @@ const registerForSeminar = catchAsync(async (req, res) => {
             `
         };
 
-        // Send emails asynchronously (don't block response)
-        sendEmail(studentEmailOptions).catch(err => console.error('Student email error:', err));
-        sendEmail(adminEmailOptions).catch(err => console.error('Admin email error:', err));
+        // Send emails safely using Promise.allSettled so cloud containers (Render/Vercel)
+        // do not freeze/terminate the process before the email handshake finishes.
+        const [studentEmailResult, adminEmailResult] = await Promise.allSettled([
+            sendEmail(studentEmailOptions),
+            sendEmail(adminEmailOptions)
+        ]);
+
+        if (studentEmailResult.status === 'rejected') {
+            console.error('Student email error:', studentEmailResult.reason);
+        }
+        if (adminEmailResult.status === 'rejected') {
+            console.error('Admin email error:', adminEmailResult.reason);
+        }
 
         res.status(201).json({
             success: true,
