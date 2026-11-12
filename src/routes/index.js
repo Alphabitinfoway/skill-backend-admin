@@ -40,6 +40,14 @@ router.use('/case-studies', caseStudyRoutes);
 const adminCaseStudyRoutes = require('./adminCaseStudyRoutes');
 router.use('/admin/case-studies', adminCaseStudyRoutes);
 
+// Mount public internship routes
+const internshipRoutes = require('./internshipRoutes');
+router.use('/internships', internshipRoutes);
+
+// Mount admin internship routes
+const adminInternshipRoutes = require('./adminInternshipRoutes');
+router.use('/admin/internships', adminInternshipRoutes);
+
 // Mount public inquiry routes
 const inquiryRoutes = require('./inquiryRoutes');
 router.use('/inquiries', inquiryRoutes);

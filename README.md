@@ -186,6 +186,27 @@ The backend mounts all routes under `/api`. Below is a summary of available endp
 - `npm run lint`: Lints the code using `oxlint`.
 - `npm run preview`: Locally previews the production build.
 
+## Internships API
+
+Internship page content is stored in MongoDB and follows the public/admin API
+pattern used by blogs and case studies. Public endpoints return published
+records; admin endpoints require the existing bearer-token authentication.
+
+- `GET /api/internships` — list published internships
+- `GET /api/internships/:slug` — get a published internship, for example
+  `/api/internships/ai-ml`
+- `GET /api/admin/internships` — list all internships
+- `GET /api/admin/internships/:id` — get an internship for editing
+- `POST /api/admin/internships` — create an internship
+- `PUT /api/admin/internships/:id` — update an internship
+- `DELETE /api/admin/internships/:id` — delete an internship
+
+Create and update requests use `application/json`. The document contains
+`title`, `slug`, `seo`, `hero`, `about`, `executionBenchmark`, `curriculum`,
+`projects`, `skills`, `eligibility`, `prerequisites`, `benefits`, `faqs`, and
+`isPublished`. Create an internship with an authenticated admin token using
+`POST /api/admin/internships`; content is managed through the admin API.
+
 ---
 
 ## 📄 License
