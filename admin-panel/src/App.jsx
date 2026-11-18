@@ -13,6 +13,7 @@ const BlogList = lazy(() => import('./pages/Blogs/BlogList'));
 const BlogForm = lazy(() => import('./pages/Blogs/BlogForm'));
 const CaseStudyList = lazy(() => import('./pages/CaseStudies/CaseStudyList'));
 const CaseStudyForm = lazy(() => import('./pages/CaseStudies/CaseStudyForm'));
+const InternshipManager = lazy(() => import('./pages/Internships/InternshipManager'));
 const MeetingList = lazy(() => import('./pages/Meetings/MeetingList'));
 const MeetingForm = lazy(() => import('./pages/Meetings/MeetingForm'));
 const SeminarList = lazy(() => import('./pages/Seminars/SeminarList'));
@@ -50,6 +51,9 @@ function App() {
                 <Route path="/case-studies" element={<CaseStudyList />} />
                 <Route path="/case-studies/create" element={<CaseStudyForm />} />
                 <Route path="/case-studies/edit/:id" element={<CaseStudyForm />} />
+                <Route path="/internships" element={<InternshipManager key="internship-list" />} />
+                <Route path="/internships/create" element={<InternshipManager key="internship-create" />} />
+                <Route path="/internships/edit/:id" element={<InternshipManager key="internship-edit" />} />
                 <Route path="/syllabus" element={<SyllabusList />} />
                 <Route path="/syllabus/create" element={<SyllabusForm />} />
                 <Route path="/syllabus/edit/:id" element={<SyllabusForm />} />

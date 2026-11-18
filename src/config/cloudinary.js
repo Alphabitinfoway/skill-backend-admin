@@ -36,6 +36,15 @@ const storage = new CloudinaryStorage({
     }
 });
 
+const internshipImageStorage = new CloudinaryStorage({
+    cloudinary,
+    params: async () => ({
+        folder: 'alphabit-skill-internship-image',
+        resource_type: 'image',
+        allowed_formats: ['jpg', 'jpeg', 'png', 'webp']
+    })
+});
+
 const resumeStorage = new CloudinaryStorage({
     cloudinary,
     params: async (req, file) => {
@@ -54,6 +63,18 @@ const resumeStorage = new CloudinaryStorage({
 
 // Initialize multer with Cloudinary storage
 const upload = multer({ storage: storage });
+const imageUpload = multer({
+    storage: internshipImageStorage,
+    limits: { fileSize: 5 * 1024 * 1024 },
+    fileFilter: (req, file, callback) => {
+        const allowedTypes = ['image/jpeg', 'image/png', 'image/webp'];
+        if (allowedTypes.includes(file.mimetype)) {
+            return callback(null, true);
+        }
+
+        callback(new AppError('Image must be a JPEG, PNG, or WebP file', 400));
+    }
+});
 const resumeUpload = multer({
     storage: resumeStorage,
     limits: { fileSize: 10 * 1024 * 1024 },
@@ -75,6 +96,7 @@ const resumeUpload = multer({
 module.exports = {
     cloudinary,
     upload,
+    imageUpload,
     resumeUpload,
     pdfUpload: upload
 };

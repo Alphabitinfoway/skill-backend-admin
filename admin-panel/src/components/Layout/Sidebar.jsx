@@ -47,6 +47,7 @@ const Sidebar = ({ collapsed, mobileOpen, closeMobile }) => {
       items: [
         { name: 'Blog Posts', path: '/blogs', icon: FileText },
         { name: 'Case Studies', path: '/case-studies', icon: BriefcaseBusiness },
+        { name: 'Internships', path: '/internships', icon: BookOpen },
         { name: 'Syllabus / PDFs', path: '/syllabus', icon: BookOpen },
         { name: 'Meetings Glance', path: '/meetings', icon: Users }
       ]
